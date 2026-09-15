@@ -11,14 +11,14 @@ describe("Driver API", () => {
 
   const testDriverData: DriverInputDto = {
     name: "Valentin",
-    phoneNumber: "123-456-7890",
+    phoneNumber: "12345678",
     email: "valentin@example.com",
-    vehicleMake: "BMW",
-    vehicleModel: "X5",
+    vehicleMake: "BMW1",
+    vehicleModel: "X52",
     vehicleYear: 2021,
     vehicleLicensePlate: "ABC-123",
     vehicleDescription: null,
-    vehicleFeatures: [],
+    vehicleFeatures: ["wi-fi"],
   };
 
   beforeAll(async () => {

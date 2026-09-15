@@ -1,5 +1,5 @@
 import { db } from "../../db/drivers-db";
-import { Driver } from "../types/driver";
+import { Driver } from "../types/driver.types";
 
 export const driversRepository = {
   getAll() {

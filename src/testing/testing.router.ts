@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { deleteTesting } from "./handlers/deleteTesting";
-import { TESTING_ROUTE } from "../core/constants/testingRouter.path";
+import { deleteTesting } from "./handlers/delete-testing";
+import { TESTING_ROUTE } from "../core/constants/testing-router.path";
 
 export const testingRouter = Router({});
 

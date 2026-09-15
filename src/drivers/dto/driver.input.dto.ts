@@ -1,6 +1,6 @@
 // Данные, которые клиент присылает при создании водителя
 
-import { VehicleFeature } from "../types/driver";
+import { VehicleFeature } from "../types/driver.types";
 
 // (без служебных id и createdAt — их проставляет сервер).
 export type DriverInputDto = {
@@ -12,5 +12,5 @@ export type DriverInputDto = {
   vehicleYear: number;
   vehicleLicensePlate: string;
   vehicleDescription: string | null;
-  vehicleFeatures: VehicleFeature[];
+  vehicleFeatures: VehicleFeature[keyof VehicleFeature][];
 };

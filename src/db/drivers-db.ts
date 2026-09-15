@@ -1,7 +1,7 @@
 // Простое хранилище в памяти вместо настоящей базы данных.
 
-import { VehicleFeature } from "../drivers/types/driver";
-import { Driver } from "../drivers/types/driver";
+import { VehicleFeature } from "../drivers/types/driver.types";
+import { Driver } from "../drivers/types/driver.types";
 
 // Данные живут только пока запущен сервер и сбрасываются при перезапуске.
 export const db = {

@@ -3,7 +3,7 @@ import express from "express";
 
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { DriverInputDto } from "../../../src/drivers/dto/driver.input.dto";
-import { VehicleFeature } from "../../../src/drivers/types/driver";
+import { VehicleFeature } from "../../../src/drivers/types/driver.types";
 import { setupApp } from "../../../src/setup-app";
 import { DRIVER_ROUTER, TESTING_ROUTER_ALL } from "../../utils/router-path";
 
