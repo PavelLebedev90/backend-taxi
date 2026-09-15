@@ -2,6 +2,9 @@ import express, { Express } from "express";
 import { driversRouter } from "./drivers/routers/drivers.router";
 import { testingRouter } from "./testing/testing.router";
 import { setupSwagger } from "./core/swagger/setup-swagger";
+import { BASE_ROUTE } from "./core/constants/base.path";
+import { DRIVER_ROUTE } from "./core/constants/driversRouter.path";
+import { TESTING_ROUTE } from "./core/constants/testingRouter.path";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
@@ -10,8 +13,8 @@ export const setupApp = (app: Express) => {
     res.status(200).send("Hello, World!");
   });
 
-  app.use("/api/drivers", driversRouter);
-  app.use("/api/testing", testingRouter);
+  app.use(`${BASE_ROUTE}${DRIVER_ROUTE.DRIVERS}`, driversRouter);
+  app.use(`${BASE_ROUTE}${TESTING_ROUTE.TESTING}`, testingRouter);
 
   setupSwagger(app);
   return app;
