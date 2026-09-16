@@ -1,11 +1,10 @@
-import request from "supertest";
 import express from "express";
-
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { DriverInputDto } from "../../../src/drivers/dto/driver.input.dto";
 import { VehicleFeature } from "../../../src/drivers/types/driver.types";
 import { setupApp } from "../../../src/setup-app";
 import { DRIVER_ROUTER, TESTING_ROUTER_ALL } from "../../utils/router-path";
+import { authenticatedRequest as request } from "../../utils/request-auth";
 
 describe("Driver API body validation check", () => {
   const app = express();
@@ -24,11 +23,11 @@ describe("Driver API body validation check", () => {
   };
 
   beforeAll(async () => {
-    await request(app).delete(TESTING_ROUTER_ALL).expect(HttpStatus.NoContent);
+    await request.delete(TESTING_ROUTER_ALL).expect(HttpStatus.NoContent);
   });
 
   it("should not create driver when incorrect body passed; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -42,7 +41,7 @@ describe("Driver API body validation check", () => {
   });
 
   it("should not create driver when name is null; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -52,7 +51,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is undefined; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -63,7 +62,7 @@ describe("Driver API body validation check", () => {
   });
 
   it("should not create driver when name is incorrect type; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -73,7 +72,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is too short; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -83,7 +82,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is too long; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -94,7 +93,7 @@ describe("Driver API body validation check", () => {
   });
 
   it("should create driver when name is valid; POST /drivers", async () => {
-    const validDriver = await request(app)
+    const validDriver = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -105,7 +104,7 @@ describe("Driver API body validation check", () => {
   });
 
   it("should not create driver when email is too long; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -116,7 +115,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when email is empty; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -127,7 +126,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when email is invalid format; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -138,7 +137,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is invalid format; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -149,7 +148,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is null; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -160,7 +159,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is too large; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -171,7 +170,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is too small; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -182,7 +181,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleFeatures is not Array; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -194,7 +193,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should create driver when vehicleFeatures is empty Array; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -206,7 +205,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.vehicleFeatures).toHaveLength(0);
   });
   it("should not create driver when vehicleFeatures is undefined; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -218,7 +217,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleFeatures has not valid item; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -234,7 +233,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should create driver when vehicleFeatures has valid items; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,
@@ -246,7 +245,7 @@ describe("Driver API body validation check", () => {
     expect(invalidDataSet1.body.vehicleFeatures).toHaveLength(2);
   });
   it("should create driver when vehicleFeatures has valid items; POST /drivers", async () => {
-    const invalidDataSet1 = await request(app)
+    const invalidDataSet1 = await request
       .post(DRIVER_ROUTER)
       .send({
         ...correctTestDriverData,

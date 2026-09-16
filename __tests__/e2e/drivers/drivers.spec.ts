@@ -1,14 +1,13 @@
-import request from "supertest";
 import express from "express";
 import { setupApp } from "../../../src/setup-app";
 import { DriverInputDto } from "../../../src/drivers/dto/driver.input.dto";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { DRIVER_ROUTER, TESTING_ROUTER_ALL } from "../../utils/router-path";
+import { authenticatedRequest as request } from "../../utils/request-auth";
 
 describe("Driver API", () => {
   const app = express();
   setupApp(app);
-
   const testDriverData: DriverInputDto = {
     name: "Valentin",
     phoneNumber: "12345678",
@@ -22,7 +21,7 @@ describe("Driver API", () => {
   };
 
   beforeAll(async () => {
-    await request(app).delete(TESTING_ROUTER_ALL).expect(HttpStatus.NoContent);
+    await request.delete(TESTING_ROUTER_ALL).expect(HttpStatus.NoContent);
   });
 
   it("should create driver; POST /api/drivers", async () => {
@@ -33,24 +32,24 @@ describe("Driver API", () => {
       email: "valentin@example.com",
     };
 
-    await request(app)
+    await request
       .post(DRIVER_ROUTER)
       .send(newDriver)
       .expect(HttpStatus.Created);
   });
 
   it("should return drivers list; GET /api/drivers", async () => {
-    await request(app)
+    await request
       .post(DRIVER_ROUTER)
       .send({ ...testDriverData, name: "Another Driver" })
       .expect(HttpStatus.Created);
 
-    await request(app)
+    await request
       .post(DRIVER_ROUTER)
       .send({ ...testDriverData, name: "Another Driver2" })
       .expect(HttpStatus.Created);
 
-    const driverListResponse = await request(app)
+    const driverListResponse = await request
       .get(DRIVER_ROUTER)
       .expect(HttpStatus.Ok);
 
@@ -59,12 +58,12 @@ describe("Driver API", () => {
   });
 
   it("should return driver by id; GET /api/drivers/:id", async () => {
-    const createResponse = await request(app)
+    const createResponse = await request
       .post(DRIVER_ROUTER)
       .send({ ...testDriverData, name: "Another Driver" })
       .expect(HttpStatus.Created);
 
-    const getResponse = await request(app)
+    const getResponse = await request
       .get(`${DRIVER_ROUTER}/${createResponse.body.id}`)
       .expect(HttpStatus.Ok);
 
@@ -76,12 +75,12 @@ describe("Driver API", () => {
   });
 
   it("should update driver by id; PUT /api/drivers/:id", async () => {
-    const createResponse = await request(app)
+    const createResponse = await request
       .post(DRIVER_ROUTER)
       .send({ ...testDriverData, name: "Bad Name", email: "bad-email@mail.ru" })
       .expect(HttpStatus.Created);
 
-    await request(app)
+    await request
       .put(`${DRIVER_ROUTER}/${createResponse.body.id}`)
       .send({
         ...testDriverData,
@@ -92,7 +91,7 @@ describe("Driver API", () => {
       })
       .expect(HttpStatus.NoContent);
 
-    const updatedDriver = await request(app)
+    const updatedDriver = await request
       .get(`${DRIVER_ROUTER}/${createResponse.body.id}`)
       .expect(HttpStatus.Ok);
 
@@ -105,12 +104,12 @@ describe("Driver API", () => {
   });
 
   it("should delete driver by id; DELETE /api/drivers/:id", async () => {
-    const createResponse = await request(app)
+    const createResponse = await request
       .post(DRIVER_ROUTER)
       .send({ ...testDriverData, name: "Devid" })
       .expect(HttpStatus.Created);
 
-    await request(app)
+    await request
       .delete(`${DRIVER_ROUTER}/${createResponse.body.id}`)
       .expect(HttpStatus.NoContent);
   });

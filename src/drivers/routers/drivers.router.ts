@@ -8,9 +8,11 @@ import { deleteDriver } from "../handlers/delete-driver";
 import { inputResultValidationErrors } from "../../core/middlewares/validation/input-result.validation";
 import { validationSchemeParamId } from "../../core/middlewares/validation/param-id.validation";
 import { validationSchemeBody } from "../validation/driver-input-dto.validation";
+import { superAdminAuth } from "../../core/middlewares/auth/super-admin.auth";
 
 export const driversRouter = Router({});
 
+driversRouter.use(superAdminAuth);
 driversRouter.get(DRIVER_ROUTE.ROOT, getDriversList);
 driversRouter.get(
   DRIVER_ROUTE.BY_ID,

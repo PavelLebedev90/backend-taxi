@@ -2,9 +2,9 @@ import express, { Express } from "express";
 import { driversRouter } from "./drivers/routers/drivers.router";
 import { testingRouter } from "./testing/testing.router";
 import { setupSwagger } from "./core/swagger/setup-swagger";
-import { BASE_ROUTE } from "./core/constants/base.path";
 import { DRIVER_ROUTE } from "./core/constants/drivers-router.path";
 import { TESTING_ROUTE } from "./core/constants/testing-router.path";
+import { BASE_ROUTE } from "./settings/config";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
