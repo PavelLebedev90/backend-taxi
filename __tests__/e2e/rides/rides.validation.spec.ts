@@ -102,6 +102,13 @@ describe("Ride API body validation check", () => {
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
+  it("should create ride when price is fractional; POST /rides", async () => {
+    await createRide({
+      ...collectCorrectRide(driver.id),
+      clientName: "John Doe",
+      price: 40.43,
+    }).expect(HttpStatus.Created);
+  });
   it("should not create ride when currency is invalid format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
       ...collectCorrectRide(driver.id),

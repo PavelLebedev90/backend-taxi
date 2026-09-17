@@ -9,7 +9,7 @@ export const validationSchemeRideInput = checkSchema(
       isLength: { options: { min: 2, max: 15 } },
     },
     price: {
-      isInt: { options: { min: 10, max: 150.0 } },
+      isFloat: { options: { min: 10, max: 150.0 } },
     },
     currency: {
       isString: true,
