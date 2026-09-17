@@ -4,7 +4,10 @@
   "builds": [
     {
       "src": "src/index.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["src/**/*.swagger.yml"]
+      }
     }
   ],
   "routes": [
@@ -12,6 +15,5 @@
       "src": "/(.*)",
       "dest": "src/index.ts"
     }
-  ],
-  "includeFiles": ["src/**/*.swagger.yml"]
+  ]
 }
