@@ -15,11 +15,15 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
-console.log("Swagger paths:", Object.keys((swaggerSpec as any).paths ?? {}));
 
 export const setupSwagger = (app: Express) => {
   app.get("/api/swagger.json", (req, res) => {
     res.setHeader("Content-Type", "application/json");
+    console.log(
+      "Swagger paths:",
+      Object.keys((swaggerSpec as any).paths ?? {}),
+    );
+
     res.send(swaggerSpec);
   });
   app.use(
