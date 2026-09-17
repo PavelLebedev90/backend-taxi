@@ -1,4 +1,5 @@
-import { db } from "../../db/drivers-db";
+import { db } from "../../db/data-base";
+import { DriverInputDto } from "../dto/driver.input.dto";
 import { Driver } from "../types/driver.types";
 
 export const driversRepository = {
@@ -8,7 +9,7 @@ export const driversRepository = {
   findById(id: number) {
     return db.drivers.find((d) => d.id === id) ?? null;
   },
-  create(bodyDriver: Omit<Driver, "id" | "createdAt">) {
+  create(bodyDriver: DriverInputDto) {
     const lastDriver = db.drivers[db.drivers.length - 1];
     const newDriver: Driver = {
       id: lastDriver ? lastDriver.id + 1 : 1,

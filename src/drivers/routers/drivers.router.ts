@@ -7,7 +7,7 @@ import { updateDriver } from "../handlers/update-driver";
 import { deleteDriver } from "../handlers/delete-driver";
 import { inputResultValidationErrors } from "../../core/middlewares/validation/input-result.validation";
 import { validationSchemeParamId } from "../../core/middlewares/validation/param-id.validation";
-import { validationSchemeBody } from "../validation/driver-input-dto.validation";
+import { validationSchemeDriverInput } from "../validation/driver-input-dto.validation";
 import { superAdminAuth } from "../../core/middlewares/auth/super-admin.auth";
 
 export const driversRouter = Router({});
@@ -22,14 +22,14 @@ driversRouter.get(
 );
 driversRouter.post(
   DRIVER_ROUTE.ROOT,
-  validationSchemeBody,
+  validationSchemeDriverInput,
   inputResultValidationErrors,
   createDriver,
 );
 driversRouter.put(
   DRIVER_ROUTE.BY_ID,
   validationSchemeParamId,
-  validationSchemeBody,
+  validationSchemeDriverInput,
   inputResultValidationErrors,
   updateDriver,
 );

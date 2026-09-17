@@ -2,8 +2,8 @@
 
 import { VehicleFeature } from "../drivers/types/driver.types";
 import { Driver } from "../drivers/types/driver.types";
+import { Ride } from "../rides/types/rides.types";
 
-// Данные живут только пока запущен сервер и сбрасываются при перезапуске.
 export const db = {
   drivers: <Driver[]>[
     {
@@ -46,4 +46,5 @@ export const db = {
       createdAt: new Date(),
     },
   ],
+  rides: <Ride[]>[],
 };

@@ -1,6 +1,6 @@
 import { checkSchema } from "express-validator/lib/middlewares/schema";
 
-export const validationSchemeBody = checkSchema(
+export const validationSchemeDriverInput = checkSchema(
   {
     name: {
       isString: true,

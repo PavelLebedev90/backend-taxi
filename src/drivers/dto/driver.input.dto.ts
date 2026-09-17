@@ -12,5 +12,5 @@ export type DriverInputDto = {
   vehicleYear: number;
   vehicleLicensePlate: string;
   vehicleDescription: string | null;
-  vehicleFeatures: VehicleFeature[keyof VehicleFeature][];
+  vehicleFeatures: VehicleFeature[];
 };
