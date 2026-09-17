@@ -15,8 +15,13 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
+console.log("Swagger paths:", Object.keys((swaggerSpec as any).paths ?? {}));
 
 export const setupSwagger = (app: Express) => {
+  app.get("/api/swagger.json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(swaggerSpec);
+  });
   app.use(
     "/api",
     swaggerUi.serve,
@@ -27,6 +32,9 @@ export const setupSwagger = (app: Express) => {
         "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-bundle.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.17.14/swagger-ui-standalone-preset.min.js",
       ],
+      swaggerOptions: {
+        url: "/api/swagger.json", // явно указываем откуда брать spec
+      },
     }),
   );
 };
