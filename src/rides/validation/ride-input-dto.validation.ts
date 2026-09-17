@@ -14,7 +14,7 @@ export const validationSchemeRideInput = checkSchema(
     currency: {
       isString: true,
       trim: true,
-      isIn: { options: [Currency.EUR, Currency.USD] },
+      isIn: { options: [[Currency.EUR, Currency.USD]] },
     },
     driverId: {
       isInt: { negated: false, options: { allow_leading_zeroes: true } },
