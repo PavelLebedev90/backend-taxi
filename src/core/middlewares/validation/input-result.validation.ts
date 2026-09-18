@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 import { HttpStatus } from "../../types/http-statuses";
 import { errorMessagesFormatter } from "../../utils/formatter/error-messages.formatter";
 
@@ -23,5 +23,6 @@ export const inputResultValidationErrors = (
     res.status(HttpStatus.BadRequest).send(errorMessagesFormatter(errors));
     return;
   }
+  req.body = matchedData(req, { locations: ["body"] });
   next();
 };

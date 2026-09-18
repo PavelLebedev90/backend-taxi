@@ -28,8 +28,8 @@ export const driversRepository = {
     db.drivers.push(newDriver);
     return newDriver;
   },
-  update(paramId: number, bodyDriver: Driver) {
-    const newDriver: Omit<Driver, "id"> = {
+  update(paramId: number, bodyDriver: DriverInputDto) {
+    const newDriver: DriverInputDto = {
       name: bodyDriver.name,
       phoneNumber: bodyDriver.phoneNumber,
       email: bodyDriver.email,
@@ -39,7 +39,6 @@ export const driversRepository = {
       vehicleLicensePlate: bodyDriver.vehicleLicensePlate,
       vehicleDescription: bodyDriver.vehicleDescription,
       vehicleFeatures: bodyDriver.vehicleFeatures,
-      createdAt: bodyDriver.createdAt,
     };
 
     const updatedDriverIdx = db.drivers.findIndex(

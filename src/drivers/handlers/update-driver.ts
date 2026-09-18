@@ -14,7 +14,7 @@ export const updateDriver = (
       .status(HttpStatus.BadRequest)
       .send(
         errorMessagesFormatter([
-          { field: "id", message: `not found Driver by id=${req.body.id}` },
+          { field: "id", message: `not found Driver by id=${req.params.id}` },
         ]),
       );
     return;
