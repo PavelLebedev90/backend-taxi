@@ -10,7 +10,7 @@ export const finishRide = async (
   const ride = await ridesRepository.findById(req.params.id);
   if (ride?.finishedAt) {
     res
-      .status(HttpStatus.NotFound)
+      .status(HttpStatus.BadRequest)
       .send(
         errorMessagesFormatter([
           { field: "id", message: "Ride already finished" },

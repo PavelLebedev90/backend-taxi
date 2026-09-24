@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "tsc -w -p tsconfig.build.json",
     "dev": "nodemon --inspect dist/index.js",
-    "jest": "jest -i",
+    "test": "jest -i",
     "lint": "eslint --fix .",
     "format": "prettier --write ."
   },

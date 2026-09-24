@@ -6,6 +6,9 @@ import { collectCorrectRide } from "../../utils/rides/collect-correct.ride";
 import { ObjectId } from "mongodb";
 import { setupDbLifecycle } from "../../utils/setup-db";
 import { DriverView } from "../../../src/drivers/types/driver-view.types";
+import { finishRide } from "../../utils/rides/finish.ride";
+import { getByIdRide } from "../../utils/rides/get-by-id.ride";
+import { isoDateRegex } from "../../utils/regex";
 
 describe("Ride API body validation check", () => {
   setupDbLifecycle();
@@ -174,5 +177,35 @@ describe("Ride API body validation check", () => {
       fromAddress: "a".repeat(102),
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
+  });
+  it("should not create ride when The driver is currently on a job; POST /rides", async () => {
+    const ride = await createRide(collectCorrectRide(driver.id)).expect(
+      HttpStatus.Created,
+    );
+
+    const ride2 = await createRide(collectCorrectRide(driver.id)).expect(
+      HttpStatus.BadRequest,
+    );
+    expect(ride2.body.errorMessages).toHaveLength(1);
+  });
+  it("should finish ride; put /:id/actions/finish", async () => {
+    const ride = await createRide(collectCorrectRide(driver.id)).expect(
+      HttpStatus.Created,
+    );
+    await finishRide(ride.body.id, new Date()).expect(HttpStatus.NoContent);
+
+    const updatedRide = await getByIdRide(ride.body.id).expect(HttpStatus.Ok);
+
+    expect(updatedRide.body.finishedAt).toMatch(isoDateRegex);
+
+    await finishRide(ride.body.id, new Date()).expect(HttpStatus.BadRequest);
+    const updatedRide2 = await getByIdRide(ride.body.id).expect(HttpStatus.Ok);
+    expect(updatedRide.body.finishedAt).toBe(updatedRide2.body.finishedAt);
+
+    const ride2 = await createRide(collectCorrectRide(driver.id)).expect(
+      HttpStatus.Created,
+    );
+
+    expect(ride2.body.id).toBeDefined();
   });
 });

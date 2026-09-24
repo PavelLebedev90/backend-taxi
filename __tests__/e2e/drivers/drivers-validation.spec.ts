@@ -3,6 +3,9 @@ import { VehicleFeature } from "../../../src/drivers/types/driver.types";
 import { createDriver } from "../../utils/drivers/create.driver";
 import { collectCorrectDriver } from "../../utils/drivers/collect-correct.driver";
 import { setupDbLifecycle } from "../../utils/setup-db";
+import { deleteDriver } from "../../utils/drivers/delete.driver";
+import { createRide } from "../../utils/rides/create.ride";
+import { collectCorrectRide } from "../../utils/rides/collect-correct.ride";
 
 describe("Driver API body validation check", () => {
   setupDbLifecycle();
@@ -180,5 +183,18 @@ describe("Driver API body validation check", () => {
       ],
     }).expect(HttpStatus.Created);
     expect(invalidDataSet1.body.vehicle.features).toHaveLength(4);
+  });
+  it("should not delete driver is currently on a job; DELETE /drivers", async () => {
+    const createdDriver = await createDriver(collectCorrectDriver());
+
+    await createRide(collectCorrectRide(createdDriver.body.id));
+
+    const invalidData = await deleteDriver(createdDriver.body.id).expect(
+      HttpStatus.BadRequest,
+    );
+    expect(invalidData.body.errorMessages[0]).toEqual({
+      field: "driverId",
+      message: "The driver is currently on a job",
+    });
   });
 });
