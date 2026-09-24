@@ -136,7 +136,7 @@ describe("Ride API body validation check", () => {
   it("should not create ride when driverId is bad format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
       ...collectCorrectRide(driver.id),
-      driverId: 13212,
+      driverId: new ObjectId().toString(),
     }).expect(HttpStatus.NotFound);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });

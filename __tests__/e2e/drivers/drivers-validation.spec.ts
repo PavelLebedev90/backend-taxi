@@ -134,7 +134,7 @@ describe("Driver API body validation check", () => {
       vehicleYear: 1934,
       vehicleFeatures: [],
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicleFeatures).toHaveLength(0);
+    expect(invalidDataSet1.body.vehicle.features).toHaveLength(0);
   });
   it("should not create driver when vehicleFeatures is undefined; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
@@ -165,7 +165,7 @@ describe("Driver API body validation check", () => {
       vehicleYear: 1934,
       vehicleFeatures: [VehicleFeature.WiFi, VehicleFeature.PetFriendly],
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicleFeatures).toHaveLength(2);
+    expect(invalidDataSet1.body.vehicle.features).toHaveLength(2);
   });
   it("should create driver when vehicleFeatures has valid items; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
@@ -179,6 +179,6 @@ describe("Driver API body validation check", () => {
         VehicleFeature.WiFi,
       ],
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicleFeatures).toHaveLength(4);
+    expect(invalidDataSet1.body.vehicle.features).toHaveLength(4);
   });
 });
