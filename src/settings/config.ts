@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const BASE_ROUTE = process.env.BASE_ROUTE || "/api";
 export const PORT = process.env.PORT || 3000;
 
@@ -6,6 +9,6 @@ export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "superuser";
 export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "superuser";
 
 export const MONGO_URL =
-  "mongodb+srv://admin:qwerty123456@taxi.h95e91p.mongodb.net/?appName=Taxi";
+  process.env.MONGO_URL || "mongodb://0.0.0.0:27017/taxi-dev-db";
 
-export const DB_NAME = "Taxi";
+export const DB_NAME = process.env.DB_NAME || "Taxi";
