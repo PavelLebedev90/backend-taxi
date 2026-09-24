@@ -1,23 +1,16 @@
-import express from "express";
-import { setupApp } from "../../../src/setup-app";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { RIDE_ROUTER } from "../../utils/router-path";
 import { authenticatedRequest as request } from "../../utils/request-auth";
-import { clearDB } from "../../utils/clear-bb";
 import { collectCorrectDriver } from "../../utils/drivers/collect-correct.driver";
 import { createDriver } from "../../utils/drivers/create.driver";
 import { collectCorrectRide } from "../../utils/rides/collect-correct.ride";
 import { RideInputDto } from "../../../src/rides/dto/ride.input.dto";
 import { createRide } from "../../utils/rides/create.ride";
 import { getByIdRide } from "../../utils/rides/get-by-id.ride";
+import { setupDbLifecycle } from "../../utils/setup-db";
 
 describe("Rides API", () => {
-  const app = express();
-  setupApp(app);
-
-  beforeEach(async () => {
-    await clearDB();
-  });
+  setupDbLifecycle();
 
   it("should create ride; POST /api/rides", async () => {
     const driver = await createDriver(collectCorrectDriver()).expect(
@@ -80,7 +73,7 @@ describe("Rides API", () => {
 
     expect(getResponse.body).toEqual({
       ...ride.body,
-      id: expect.any(Number),
+      _id: expect.any(String),
       createdAt: expect.any(String),
       updatedAt: null,
     });

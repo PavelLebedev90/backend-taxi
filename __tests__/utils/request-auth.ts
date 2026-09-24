@@ -1,14 +1,10 @@
-import express from "express";
 import request from "supertest";
-import { setupApp } from "../../src/setup-app";
 import {
   ADMIN_PASSWORD,
   ADMIN_USERNAME,
   BASE_AUTH_PREFIX,
 } from "../../src/settings/config";
-
-const app = express();
-setupApp(app);
+import { app } from "../constants/app-express";
 
 const AUTH_CREDENTIALS = Buffer.from(
   `${ADMIN_USERNAME}:${ADMIN_PASSWORD}`,

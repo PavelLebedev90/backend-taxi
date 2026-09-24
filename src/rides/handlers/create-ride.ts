@@ -1,17 +1,19 @@
 import { Request, Response } from "express";
 import { ErrorMessage } from "../../core/types/validation-error";
-import { Ride } from "../types/rides.types";
 import { ridesRepository } from "../repository/rides.repository";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { RideInputDto } from "../dto/ride.input.dto";
 import { driversRepository } from "../../drivers/repository/drivers.repository";
 import { errorMessagesFormatter } from "../../core/utils/formatter/error-messages.formatter";
+import { mapRideView } from "../mappers/ride-view";
+import { mapRideInputToDTO } from "../mappers/ride-input-to-dto";
+import { RideView } from "../types/rides-view.types";
 
-export const createRide = (
+export const createRide = async (
   req: Request<unknown, unknown, RideInputDto>,
-  res: Response<Ride | ErrorMessage>,
+  res: Response<RideView | ErrorMessage>,
 ) => {
-  const driver = driversRepository.findById(req.body.driverId);
+  const driver = await driversRepository.findById(req.body.driverId);
   if (!driver) {
     res.status(HttpStatus.NotFound).send(
       errorMessagesFormatter([
@@ -23,7 +25,34 @@ export const createRide = (
     );
     return;
   }
+  const activeRide = await ridesRepository.findActiveRideByDriverId(
+    req.body.driverId,
+  );
 
-  const createdRide = ridesRepository.create(req.body, driver);
-  res.status(HttpStatus.Created).send(createdRide);
+  if (activeRide) {
+    res
+      .status(HttpStatus.BadRequest)
+      .send(
+        errorMessagesFormatter([
+          { field: "driverId", message: "The driver is currently on a job" },
+        ]),
+      );
+
+    return;
+  }
+
+  const createdRide = await ridesRepository.create({
+    ...mapRideInputToDTO(req.body, driver),
+    createdAt: new Date(),
+    updatedAt: null,
+    startedAt: new Date(),
+    finishedAt: null,
+  });
+
+  if (!createdRide) {
+    res.status(HttpStatus.NotFound);
+    return;
+  }
+
+  res.status(HttpStatus.Created).send(mapRideView(createdRide));
 };

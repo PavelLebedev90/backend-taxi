@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { db } from "../../db/data-base";
+import { driverCollection, rideCollection } from "../../db/collections";
 
 export const deleteTesting = (req: Request, res: Response) => {
-  db.drivers = [];
-  db.rides = [];
+  driverCollection.deleteMany({});
+  rideCollection.deleteMany({});
   res.sendStatus(HttpStatus.NoContent);
 };

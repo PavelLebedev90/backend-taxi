@@ -1,19 +1,11 @@
-import express from "express";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { VehicleFeature } from "../../../src/drivers/types/driver.types";
-import { setupApp } from "../../../src/setup-app";
-import { clearDB } from "../../utils/clear-bb";
 import { createDriver } from "../../utils/drivers/create.driver";
 import { collectCorrectDriver } from "../../utils/drivers/collect-correct.driver";
+import { setupDbLifecycle } from "../../utils/setup-db";
 
 describe("Driver API body validation check", () => {
-  const app = express();
-  setupApp(app);
-
-  beforeEach(async () => {
-    await clearDB();
-  });
-
+  setupDbLifecycle();
   it("should not create driver when incorrect body passed; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
       ...collectCorrectDriver(),

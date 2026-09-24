@@ -1,67 +1,32 @@
-import { db } from "../../db/data-base";
-import { DriverInputDto } from "../dto/driver.input.dto";
+import { ObjectId } from "mongodb";
+import { driverCollection } from "../../db/collections";
 import { Driver } from "../types/driver.types";
 
 export const driversRepository = {
-  getAll() {
-    return db.drivers;
+  async getAll() {
+    return await driverCollection.find().toArray();
   },
-  findById(id: number) {
-    return db.drivers.find((d) => d.id === id) ?? null;
+  async findById(id: string) {
+    return await driverCollection.findOne({ _id: new ObjectId(id) });
   },
-  create(bodyDriver: DriverInputDto) {
-    const lastDriver = db.drivers[db.drivers.length - 1];
-    const newDriver: Driver = {
-      id: lastDriver ? lastDriver.id + 1 : 1,
-      name: bodyDriver.name,
-      phoneNumber: bodyDriver.phoneNumber,
-      email: bodyDriver.email,
-      vehicleMake: bodyDriver.vehicleMake,
-      vehicleModel: bodyDriver.vehicleModel,
-      vehicleYear: bodyDriver.vehicleYear,
-      vehicleLicensePlate: bodyDriver.vehicleLicensePlate,
-      vehicleDescription: bodyDriver.vehicleDescription,
-      vehicleFeatures: bodyDriver.vehicleFeatures,
-      createdAt: new Date(),
-    };
-
-    db.drivers.push(newDriver);
-    return newDriver;
-  },
-  update(paramId: number, bodyDriver: DriverInputDto) {
-    const newDriver: DriverInputDto = {
-      name: bodyDriver.name,
-      phoneNumber: bodyDriver.phoneNumber,
-      email: bodyDriver.email,
-      vehicleMake: bodyDriver.vehicleMake,
-      vehicleModel: bodyDriver.vehicleModel,
-      vehicleYear: bodyDriver.vehicleYear,
-      vehicleLicensePlate: bodyDriver.vehicleLicensePlate,
-      vehicleDescription: bodyDriver.vehicleDescription,
-      vehicleFeatures: bodyDriver.vehicleFeatures,
-    };
-
-    const updatedDriverIdx = db.drivers.findIndex(
-      (driver) => driver.id === paramId,
+  async create(bodyDriver: Driver) {
+    const createdDriver = await driverCollection.insertOne(bodyDriver);
+    const driver = await driversRepository.findById(
+      createdDriver.insertedId.toString(),
     );
-    if (updatedDriverIdx < 0) {
-      return false;
-    }
-
-    db.drivers[updatedDriverIdx] = {
-      ...db.drivers[updatedDriverIdx],
-      ...newDriver,
-    };
-    return true;
+    return driver;
   },
-  delete(paramId: number) {
-    const deletedDriverIdx = db.drivers.findIndex(
-      (driver) => driver.id === paramId,
+  async update(paramId: string, bodyDriver: Omit<Driver, "createdAt">) {
+    const updatedDriver = await driverCollection.updateOne(
+      { _id: new ObjectId(paramId) },
+      { $set: bodyDriver },
     );
-    if (deletedDriverIdx < 0) {
-      return false;
-    }
-    db.drivers.splice(deletedDriverIdx, 1);
-    return true;
+    return updatedDriver.matchedCount === 1;
+  },
+  async delete(paramId: string) {
+    const isDeleted = await driverCollection.deleteOne({
+      _id: new ObjectId(paramId),
+    });
+    return isDeleted.deletedCount === 1;
   },
 };

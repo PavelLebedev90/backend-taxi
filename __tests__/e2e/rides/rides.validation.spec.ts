@@ -1,19 +1,16 @@
-import express from "express";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
-import { Driver } from "../../../src/drivers/types/driver.types";
-import { setupApp } from "../../../src/setup-app";
-import { clearDB } from "../../utils/clear-bb";
 import { createDriver } from "../../utils/drivers/create.driver";
 import { collectCorrectDriver } from "../../utils/drivers/collect-correct.driver";
 import { createRide } from "../../utils/rides/create.ride";
 import { collectCorrectRide } from "../../utils/rides/collect-correct.ride";
+import { ObjectId } from "mongodb";
+import { setupDbLifecycle } from "../../utils/setup-db";
+import { DriverView } from "../../../src/drivers/types/driver-view.types";
 
 describe("Ride API body validation check", () => {
-  const app = express();
-  setupApp(app);
-  let driver: Driver;
+  setupDbLifecycle();
+  let driver: DriverView;
   beforeEach(async () => {
-    await clearDB();
     const driverRes = await createDriver(collectCorrectDriver()).expect(
       HttpStatus.Created,
     );
@@ -132,14 +129,14 @@ describe("Ride API body validation check", () => {
   });
   it("should not create ride when driver for driverId is not found; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(--driver.id),
+      ...collectCorrectRide(new ObjectId().toString()),
     }).expect(HttpStatus.NotFound);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when driverId is bad format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
       ...collectCorrectRide(driver.id),
-      driverId: "1",
+      driverId: 13212,
     }).expect(HttpStatus.NotFound);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });

@@ -1,8 +1,5 @@
-export enum VehicleFeature {
-  WiFi = "wi-fi",
-  ChildSeat = "child-seat",
-  PetFriendly = "pet-friendly",
-}
+import { VehicleFeature } from "./driver.types";
+
 type Vehicle = {
   make: string;
   model: string;
@@ -12,7 +9,8 @@ type Vehicle = {
   features: VehicleFeature[];
 };
 
-export type Driver = {
+export type DriverView = {
+  id: string;
   name: string;
   phoneNumber: string;
   email: string;

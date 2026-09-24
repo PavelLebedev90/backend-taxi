@@ -1,37 +1,34 @@
-import { db } from "../../db/data-base";
-import { Driver } from "../../drivers/types/driver.types";
-import { RideInputDto } from "../dto/ride.input.dto";
+import { ObjectId } from "mongodb";
+import { rideCollection } from "../../db/collections";
 import { Ride } from "../types/rides.types";
 
 export const ridesRepository = {
-  getAll() {
-    return db.rides;
+  async getAll() {
+    return await rideCollection.find().toArray();
   },
-  findById(id: number) {
-    return db.rides.find((d) => d.id === id) ?? null;
+  async findById(id: string) {
+    return await rideCollection.findOne({ _id: new ObjectId(id) });
   },
-  create(bodyRide: RideInputDto, driver: Driver) {
-    const lastRide = db.rides[db.rides.length - 1];
-    const newRide: Ride = {
-      id: lastRide ? lastRide.id + 1 : 1,
-      vehicleName: `${driver.vehicleMake} ${driver.vehicleModel}`,
-      price: bodyRide.price,
-      addresses: {
-        from: bodyRide.fromAddress,
-        to: bodyRide.toAddress,
+  async findActiveRideByDriverId(id: string) {
+    return await rideCollection.findOne({ "driver.id": id, finishedAt: null });
+  },
+  async create(bodyRide: Ride) {
+    const createdRide = await rideCollection.insertOne(bodyRide);
+    const ride = await rideCollection.findOne({ _id: createdRide.insertedId });
+    return ride;
+  },
+  async finishRide(id: string, finishedAt: Date) {
+    const updatedRide = await rideCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          finishedAt,
+          updatedAt: new Date(),
+        },
       },
-      clientName: bodyRide.clientName,
-      driverId: driver.id,
-      driverName: driver.name,
-      currency: bodyRide.currency,
-      updatedAt: null,
-      vehicleLicensePlate: driver.vehicleLicensePlate,
-      createdAt: new Date(),
-    };
-
-    db.rides.push(newRide);
-    return newRide;
+    );
+    return updatedRide.matchedCount === 1;
   },
-  update(_paramId: number, _bodyDriver: unknown) {},
-  delete(_paramId: number) {},
+  async update(_paramId: number, _bodyDriver: unknown) {},
+  async delete(_paramId: number) {},
 };

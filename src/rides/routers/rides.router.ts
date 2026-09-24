@@ -7,6 +7,7 @@ import { getRide } from "../handlers/get-ride";
 import { createRide } from "../handlers/create-ride";
 import { validationSchemeRideInput } from "../validation/ride-input-dto.validation";
 import { superAdminAuth } from "../../core/middlewares/auth/super-admin.auth";
+import { finishRide } from "../handlers/finish-ride";
 
 export const ridesRouter = Router({});
 
@@ -23,4 +24,11 @@ ridesRouter.post(
   validationSchemeRideInput,
   inputResultValidationErrors,
   createRide,
+);
+
+ridesRouter.put(
+  RIDE_ROUTE.FINISH,
+  validationSchemeParamId,
+  inputResultValidationErrors,
+  finishRide,
 );

@@ -1,22 +1,15 @@
-import express from "express";
-import { setupApp } from "../../../src/setup-app";
 import { DriverInputDto } from "../../../src/drivers/dto/driver.input.dto";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { DRIVER_ROUTER } from "../../utils/router-path";
 import { authenticatedRequest as request } from "../../utils/request-auth";
-import { clearDB } from "../../utils/clear-bb";
 import { collectCorrectDriver } from "../../utils/drivers/collect-correct.driver";
 import { createDriver } from "../../utils/drivers/create.driver";
 import { getByIdDriver } from "../../utils/drivers/get-by-id.driver";
 import { updateDriver } from "../../utils/drivers/update.driver";
+import { setupDbLifecycle } from "../../utils/setup-db";
 
 describe("Driver API", () => {
-  const app = express();
-  setupApp(app);
-
-  beforeEach(async () => {
-    await clearDB();
-  });
+  setupDbLifecycle();
 
   it("should create driver; POST /api/drivers", async () => {
     const newDriver: DriverInputDto = {
@@ -64,7 +57,7 @@ describe("Driver API", () => {
 
     expect(getResponse.body).toEqual({
       ...createResponse.body,
-      id: expect.any(Number),
+      id: expect.any(String),
       createdAt: expect.any(String),
     });
   });
@@ -78,10 +71,8 @@ describe("Driver API", () => {
 
     await updateDriver(createResponse.body.id, {
       ...collectCorrectDriver(),
-      createdAt: createResponse.body.createdAt,
       name: "Good Name",
       email: "good-email@mail.ru",
-      id: 9999,
     }).expect(HttpStatus.NoContent);
 
     const updatedDriver = await getByIdDriver(createResponse.body.id).expect(

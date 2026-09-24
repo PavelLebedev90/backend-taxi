@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { Driver } from "../types/driver.types";
 import { driversRepository } from "../repository/drivers.repository";
 import { errorMessagesFormatter } from "../../core/utils/formatter/error-messages.formatter";
+import { mapDriverInputToDTO } from "../mappers/driver-input-to-dto";
+import { DriverInputDto } from "../dto/driver.input.dto";
 
-export const updateDriver = (
-  req: Request<{ id: string }, unknown, Driver>,
+export const updateDriver = async (
+  req: Request<{ id: string }, unknown, DriverInputDto>,
   res: Response,
 ) => {
-  const isUpdated = driversRepository.update(+req.params.id, req.body);
+  const isUpdated = await driversRepository.update(
+    req.params.id,
+    mapDriverInputToDTO(req.body),
+  );
   if (!isUpdated) {
     res
       .status(HttpStatus.BadRequest)

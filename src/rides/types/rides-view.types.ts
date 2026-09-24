@@ -1,9 +1,7 @@
-export enum Currency {
-  USD = "usd",
-  EUR = "eur",
-}
+import { Currency } from "./rides.types";
 
-export type Ride = {
+export type RideView = {
+  id: string;
   clientName: string;
   driver: {
     id: string;
@@ -15,8 +13,6 @@ export type Ride = {
   };
   price: number;
   currency: Currency;
-  createdAt: Date;
-  updatedAt: Date | null;
   startedAt: Date | null;
   finishedAt: Date | null;
   addresses: {

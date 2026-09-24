@@ -4,7 +4,7 @@ export const validationSchemeParamId = checkSchema(
   {
     id: {
       isString: true,
-      isNumeric: true,
+      isMongoId: true,
       isEmpty: { negated: true },
     },
   },

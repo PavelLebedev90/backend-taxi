@@ -1,7 +1,7 @@
 import { RideInputDto } from "../../../src/rides/dto/ride.input.dto";
 import { Currency } from "../../../src/rides/types/rides.types";
 
-export const collectCorrectRide = (driverId: number): RideInputDto => {
+export const collectCorrectRide = (driverId: string): RideInputDto => {
   return {
     driverId,
     clientName: "John",
