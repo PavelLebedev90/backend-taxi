@@ -6,7 +6,6 @@ const config: Config = {
     "^.+\\.(t|j)sx?$": "@swc/jest",
   },
   testMatch: ["**/__tests__/**/*.spec.ts", "**/__tests__/**/*.test.ts"],
-  testTimeout: 10000,
 };
 
 export default config;

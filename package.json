@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "tsc -w -p tsconfig.build.json",
     "dev": "nodemon --inspect dist/index.js",
-    "test": "jest -i",
+    "test": "jest",
     "lint": "eslint --fix .",
     "format": "prettier --write ."
   },
@@ -18,7 +18,7 @@
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
-    "mongodb": "^6.21.0",
+    "mongodb": "^7.6.0",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
   },

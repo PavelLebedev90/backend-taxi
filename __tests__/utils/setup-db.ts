@@ -5,8 +5,7 @@ import { clearDB } from "./clear-bb";
 export function setupDbLifecycle() {
   beforeAll(async () => {
     await runDB(MONGO_URL_DEV);
-    await clearDB();
-  });
+  }, 20000);
 
   beforeEach(async () => {
     await clearDB();

@@ -1,4 +1,5 @@
 import { Db, MongoClient } from "mongodb";
+import os from "node:os";
 import { initCollections } from "./collections";
 import { DB_NAME } from "../settings/config";
 
@@ -6,7 +7,7 @@ export let client: MongoClient;
 
 // Подключение к БД
 export async function runDB(url: string): Promise<void> {
-  client = new MongoClient(url);
+  client = new MongoClient(url, { runtimeAdapters: { os } });
   const db: Db = client.db(DB_NAME);
 
   // Инициализируем коллекции из подключённой базы.
