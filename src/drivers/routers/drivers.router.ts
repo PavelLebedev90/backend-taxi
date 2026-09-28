@@ -7,13 +7,19 @@ import { updateDriver } from "../handlers/update-driver";
 import { deleteDriver } from "../handlers/delete-driver";
 import { inputResultValidationErrors } from "../../core/middlewares/validation/input-result.validation";
 import { validationSchemeParamId } from "../../core/middlewares/validation/param-id.validation";
-import { validationSchemeDriverInput } from "../validation/driver-input-dto.validation";
+import { validationSchemaDriverInputBody } from "../validation/driver-input-body.validation";
 import { superAdminAuth } from "../../core/middlewares/auth/super-admin.auth";
+import { validationSchemaDriverInputQuery } from "../validation/driver-input-query.validation";
 
 export const driversRouter = Router({});
 
 driversRouter.use(superAdminAuth);
-driversRouter.get(DRIVER_ROUTE.ROOT, getDriversList);
+driversRouter.get(
+  DRIVER_ROUTE.ROOT,
+  validationSchemaDriverInputQuery,
+  inputResultValidationErrors,
+  getDriversList,
+);
 driversRouter.get(
   DRIVER_ROUTE.BY_ID,
   validationSchemeParamId,
@@ -22,14 +28,14 @@ driversRouter.get(
 );
 driversRouter.post(
   DRIVER_ROUTE.ROOT,
-  validationSchemeDriverInput,
+  validationSchemaDriverInputBody,
   inputResultValidationErrors,
   createDriver,
 );
 driversRouter.put(
   DRIVER_ROUTE.BY_ID,
   validationSchemeParamId,
-  validationSchemeDriverInput,
+  validationSchemaDriverInputBody,
   inputResultValidationErrors,
   updateDriver,
 );

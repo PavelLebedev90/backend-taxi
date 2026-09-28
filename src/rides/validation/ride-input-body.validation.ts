@@ -1,8 +1,11 @@
 import { checkSchema } from "express-validator/lib/middlewares/schema";
 import { Currency } from "../types/rides.types";
+import { ResourceType } from "../../core/types/resource";
+import { resourceTypeSchema } from "../../core/middlewares/validation/resource-type.validation";
 
-export const validationSchemeRideInput = checkSchema(
+export const validationSchemaRideInputBody = checkSchema(
   {
+    ...resourceTypeSchema(ResourceType.Rides),
     clientName: {
       isString: true,
       trim: true,

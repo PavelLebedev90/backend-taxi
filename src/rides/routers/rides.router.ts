@@ -5,14 +5,20 @@ import { inputResultValidationErrors } from "../../core/middlewares/validation/i
 import { getRidesList } from "../handlers/get-rides-list";
 import { getRide } from "../handlers/get-ride";
 import { createRide } from "../handlers/create-ride";
-import { validationSchemeRideInput } from "../validation/ride-input-dto.validation";
+import { validationSchemaRideInputBody } from "../validation/ride-input-body.validation";
 import { superAdminAuth } from "../../core/middlewares/auth/super-admin.auth";
 import { finishRide } from "../handlers/finish-ride";
+import { validationSchemaRideInputQuery } from "../validation/ride-input-query.validation";
 
 export const ridesRouter = Router({});
 
 ridesRouter.use(superAdminAuth);
-ridesRouter.get(RIDE_ROUTE.ROOT, getRidesList);
+ridesRouter.get(
+  RIDE_ROUTE.ROOT,
+  validationSchemaRideInputQuery,
+  inputResultValidationErrors,
+  getRidesList,
+);
 ridesRouter.get(
   RIDE_ROUTE.BY_ID,
   validationSchemeParamId,
@@ -21,7 +27,7 @@ ridesRouter.get(
 );
 ridesRouter.post(
   RIDE_ROUTE.ROOT,
-  validationSchemeRideInput,
+  validationSchemaRideInputBody,
   inputResultValidationErrors,
   createRide,
 );

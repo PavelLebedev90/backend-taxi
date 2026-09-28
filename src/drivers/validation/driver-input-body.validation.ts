@@ -1,7 +1,10 @@
 import { checkSchema } from "express-validator/lib/middlewares/schema";
+import { ResourceType } from "../../core/types/resource";
+import { resourceTypeSchema } from "../../core/middlewares/validation/resource-type.validation";
 
-export const validationSchemeDriverInput = checkSchema(
+export const validationSchemaDriverInputBody = checkSchema(
   {
+    ...resourceTypeSchema(ResourceType.Drivers),
     name: {
       isString: true,
       trim: true,

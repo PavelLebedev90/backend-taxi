@@ -24,5 +24,11 @@ export const inputResultValidationErrors = (
     return;
   }
   req.body = matchedData(req, { locations: ["body"] });
+  const cleanQuery = matchedData(req, { locations: ["query"] });
+
+  Object.defineProperty(req, "query", {
+    value: cleanQuery,
+    writable: true,
+  });
   next();
 };
