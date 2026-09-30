@@ -17,116 +17,195 @@ describe("Ride API body validation check", () => {
     const driverRes = await createDriver(collectCorrectDriver()).expect(
       HttpStatus.Created,
     );
-    driver = driverRes.body;
+    driver = driverRes.body.data;
   });
 
   it("should not create ride when incorrect body passed; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "   ",
-      currency: "rub",
-      price: null,
-      fromAddress: "   ",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: "   ",
+          currency: "rub",
+          price: null,
+          fromAddress: "   ",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(4);
+  });
+  it("should not create ride when type is not valid; POST /rides", async () => {
+    const invalidDataSet1 = await createRide({
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        type: "bla-bla",
+      },
+    }).expect(HttpStatus.BadRequest);
+    expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
 
   it("should not create ride when clientName is null; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: null,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: null,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
-    expect(invalidDataSet1.body.errorMessages[0].field).toBe("clientName");
+    expect(invalidDataSet1.body.errorMessages[0].field).toBe(
+      "data.attributes.clientName",
+    );
   });
   it("should not create ride when clientName is undefined; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: undefined,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: undefined,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
-    expect(invalidDataSet1.body.errorMessages[0].field).toBe("clientName");
+    expect(invalidDataSet1.body.errorMessages[0].field).toBe(
+      "data.attributes.clientName",
+    );
   });
 
   it("should not create ride when clientName is incorrect type; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: ["invalid type"],
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: ["invalid type"],
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when clientName is too short; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "A",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: "A",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when clientName is too long; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "AAAAAAAAAAAAAAAA", // 16 characters, assuming maxLength is 15
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: "AAAAAAAAAAAAAAAA", // 16 characters, assuming maxLength is 15
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
 
   it("should create ride when clientName is valid; POST /rides", async () => {
     const validDriver = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "John Doe",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          clientName: "John Doe",
+        },
+      },
     }).expect(HttpStatus.Created);
-    expect(validDriver.body).toHaveProperty("id");
+    expect(validDriver.body.data).toHaveProperty("id");
   });
 
   it("should not create ride when price is too big; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "John Doe",
-      price: 1000,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          price: 1000,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when proce is empty; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "John Doe",
-      price: undefined,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          price: undefined,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when price is too small; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "John Doe",
-      price: 1,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          price: 1,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should create ride when price is fractional; POST /rides", async () => {
     await createRide({
-      ...collectCorrectRide(driver.id),
-      clientName: "John Doe",
-      price: 40.43,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          price: 40.43,
+        },
+      },
     }).expect(HttpStatus.Created);
   });
   it("should not create ride when currency is invalid format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      currency: "a",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          currency: "a",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when currency is null; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      currency: null,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          currency: null,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when currency is not valid format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      currency: ["eur"],
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          currency: ["eur"],
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
@@ -138,50 +217,78 @@ describe("Ride API body validation check", () => {
   });
   it("should not create ride when driverId is bad format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      driverId: new ObjectId().toString(),
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          driverId: new ObjectId().toString(),
+        },
+      },
     }).expect(HttpStatus.NotFound);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when fromAddress is not valid format; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      fromAddress: [],
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          fromAddress: [],
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when fromAddress is null; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      fromAddress: null,
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          fromAddress: null,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when fromAddress is empty; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      fromAddress: "     ",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          fromAddress: "     ",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when fromAddress to small; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      fromAddress: "aa",
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          fromAddress: "aa",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when fromAddress to big; POST /rides", async () => {
     const invalidDataSet1 = await createRide({
-      ...collectCorrectRide(driver.id),
-      fromAddress: "a".repeat(102),
+      data: {
+        ...collectCorrectRide(driver.id).data,
+        attributes: {
+          ...collectCorrectRide(driver.id).data.attributes,
+          fromAddress: "a".repeat(102),
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create ride when The driver is currently on a job; POST /rides", async () => {
-    const ride = await createRide(collectCorrectRide(driver.id)).expect(
-      HttpStatus.Created,
-    );
+    await createRide(collectCorrectRide(driver.id)).expect(HttpStatus.Created);
 
     const ride2 = await createRide(collectCorrectRide(driver.id)).expect(
       HttpStatus.BadRequest,
@@ -192,20 +299,30 @@ describe("Ride API body validation check", () => {
     const ride = await createRide(collectCorrectRide(driver.id)).expect(
       HttpStatus.Created,
     );
-    await finishRide(ride.body.id, new Date()).expect(HttpStatus.NoContent);
+    await finishRide(ride.body.data.id, new Date()).expect(
+      HttpStatus.NoContent,
+    );
 
-    const updatedRide = await getByIdRide(ride.body.id).expect(HttpStatus.Ok);
+    const updatedRide = await getByIdRide(ride.body.data.id).expect(
+      HttpStatus.Ok,
+    );
 
-    expect(updatedRide.body.finishedAt).toMatch(isoDateRegex);
+    expect(updatedRide.body.data.attributes.finishedAt).toMatch(isoDateRegex);
 
-    await finishRide(ride.body.id, new Date()).expect(HttpStatus.BadRequest);
-    const updatedRide2 = await getByIdRide(ride.body.id).expect(HttpStatus.Ok);
-    expect(updatedRide.body.finishedAt).toBe(updatedRide2.body.finishedAt);
+    await finishRide(ride.body.data.id, new Date()).expect(
+      HttpStatus.BadRequest,
+    );
+    const updatedRide2 = await getByIdRide(ride.body.data.id).expect(
+      HttpStatus.Ok,
+    );
+    expect(updatedRide.body.data.attributes.finishedAt).toBe(
+      updatedRide2.body.data.attributes.finishedAt,
+    );
 
     const ride2 = await createRide(collectCorrectRide(driver.id)).expect(
       HttpStatus.Created,
     );
 
-    expect(ride2.body.id).toBeDefined();
+    expect(ride2.body.data.id).toBeDefined();
   });
 });

@@ -1,58 +1,29 @@
 import { Request, Response } from "express";
 import { ErrorMessage } from "../../core/types/validation-error";
-import { ridesRepository } from "../repository/rides.repository";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { RideInputDto } from "../dto/ride.input.dto";
-import { driversRepository } from "../../drivers/repository/drivers.repository";
-import { errorMessagesFormatter } from "../../core/utils/formatter/error-messages.formatter";
-import { mapRideView } from "../mappers/ride-view";
+import { RideCreateInput } from "../dto/ride.input.dto";
+import { mapRideDataView } from "../mappers/ride-view";
 import { mapRideInputToDTO } from "../mappers/ride-input-to-dto";
-import { RideView } from "../types/rides-view.types";
+import { RideDataView } from "../types/rides-view.types";
+import { ridesService } from "../application/rides.service";
+import { driversService } from "../../drivers/application/drivers.service";
 
 export const createRide = async (
-  req: Request<unknown, unknown, RideInputDto>,
-  res: Response<RideView | ErrorMessage>,
+  req: Request<unknown, unknown, RideCreateInput>,
+  res: Response<RideDataView | ErrorMessage>,
 ) => {
-  const driver = await driversRepository.findById(req.body.driverId);
-  if (!driver) {
-    res.status(HttpStatus.NotFound).send(
-      errorMessagesFormatter([
-        {
-          field: "driverId",
-          message: "not found Driver by driverId",
-        },
-      ]),
-    );
-    return;
-  }
-  const activeRide = await ridesRepository.findActiveRideByDriverId(
-    req.body.driverId,
+  const driver = await driversService.findByIdOrFail(
+    req.body.data.attributes.driverId,
   );
 
-  if (activeRide) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        errorMessagesFormatter([
-          { field: "driverId", message: "The driver is currently on a job" },
-        ]),
-      );
-
-    return;
-  }
-
-  const createdRide = await ridesRepository.create({
-    ...mapRideInputToDTO(req.body, driver),
+  const createdRideId = await ridesService.create({
+    ...mapRideInputToDTO(req.body.data.attributes, driver),
     createdAt: new Date(),
     updatedAt: null,
     startedAt: new Date(),
     finishedAt: null,
   });
 
-  if (!createdRide) {
-    res.status(HttpStatus.NotFound);
-    return;
-  }
-
-  res.status(HttpStatus.Created).send(mapRideView(createdRide));
+  const ride = await ridesService.findByIdOrFail(createdRideId.toString());
+  res.status(HttpStatus.Created).send(mapRideDataView(ride));
 };

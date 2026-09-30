@@ -1,9 +1,9 @@
 import { RIDE_ROUTER } from "../router-path";
 import { authenticatedRequest as request } from "../../utils/request-auth";
-import { RideInputDto } from "../../../src/rides/dto/ride.input.dto";
+import { RideCreateInput } from "../../../src/rides/dto/ride.input.dto";
 
 type RideInputTestDto = {
-  [K in keyof RideInputDto]?: any;
+  [K in keyof RideCreateInput]?: any;
 };
 
 export const createRide = (newRide: RideInputTestDto) => {

@@ -5,29 +5,31 @@ import { resourceTypeSchema } from "../../core/middlewares/validation/resource-t
 
 export const validationSchemaRideInputBody = checkSchema(
   {
-    ...resourceTypeSchema(ResourceType.Rides),
-    clientName: {
+    "data.type": {
+      ...resourceTypeSchema(ResourceType.Rides),
+    },
+    "data.attributes.clientName": {
       isString: true,
       trim: true,
       isLength: { options: { min: 2, max: 15 } },
     },
-    price: {
+    "data.attributes.price": {
       isFloat: { options: { min: 10, max: 150.0 } },
     },
-    currency: {
+    "data.attributes.currency": {
       isString: true,
       trim: true,
       isIn: { options: [[Currency.EUR, Currency.USD]] },
     },
-    driverId: {
+    "data.attributes.driverId": {
       isMongoId: { negated: false },
     },
-    fromAddress: {
+    "data.attributes.fromAddress": {
       isString: true,
       trim: true,
       isLength: { options: { min: 5, max: 100 } },
     },
-    toAddress: {
+    "data.attributes.toAddress": {
       isString: true,
       trim: true,
       isLength: { options: { min: 5, max: 100 } },

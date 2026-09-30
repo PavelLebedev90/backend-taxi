@@ -1,4 +1,4 @@
-import { DriverInputDto } from "../../../src/drivers/dto/driver.input.dto";
+import { DriverCreateInput } from "../../../src/drivers/dto/driver.input.dto";
 import { HttpStatus } from "../../../src/core/types/http-statuses";
 import { DRIVER_ROUTER } from "../../utils/router-path";
 import { authenticatedRequest as request } from "../../utils/request-auth";
@@ -7,94 +7,146 @@ import { createDriver } from "../../utils/drivers/create.driver";
 import { getByIdDriver } from "../../utils/drivers/get-by-id.driver";
 import { updateDriver } from "../../utils/drivers/update.driver";
 import { setupDbLifecycle } from "../../utils/setup-db";
+import { ResourceType } from "../../../src/core/types/resource";
 
 describe("Driver API", () => {
   setupDbLifecycle();
 
   it("should create driver; POST /api/drivers", async () => {
-    const newDriver: DriverInputDto = {
-      ...collectCorrectDriver(),
-      name: "Valentin",
-      phoneNumber: "123-456-7890",
-      email: "valentin@example.com",
+    const newDriver: DriverCreateInput = {
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Valentin",
+          phoneNumber: "123-456-7890",
+          email: "valentin@example.com",
+        },
+      },
     };
     await createDriver(newDriver).expect(HttpStatus.Created);
   });
 
   it("should return drivers list; GET /api/drivers", async () => {
     await createDriver({
-      ...collectCorrectDriver(),
-      name: "Another Driver",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Another Driver",
+        },
+      },
     }).expect(HttpStatus.Created);
 
     await createDriver({
-      ...collectCorrectDriver(),
-      name: "Another Driver2",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Another Driver2",
+        },
+      },
     }).expect(HttpStatus.Created);
 
     const driverListResponse = await request
       .get(DRIVER_ROUTER)
       .expect(HttpStatus.Ok);
 
-    expect(driverListResponse.body).toBeInstanceOf(Array);
-    expect(driverListResponse.body.length).toBeGreaterThanOrEqual(2);
+    expect(driverListResponse.body.data).toBeInstanceOf(Array);
+    expect(driverListResponse.body.data.length).toBeGreaterThanOrEqual(2);
   });
 
   it("should return driver by id; GET /api/drivers/:id", async () => {
     await createDriver({
-      ...collectCorrectDriver(),
-      name: "Another Driver",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Another Driver",
+        },
+      },
     }).expect(HttpStatus.Created);
 
     const createResponse = await createDriver({
-      ...collectCorrectDriver(),
-      name: "Another Driver",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Another Driver",
+        },
+      },
     }).expect(HttpStatus.Created);
 
-    const getResponse = await getByIdDriver(createResponse.body.id).expect(
+    const getResponse = await getByIdDriver(createResponse.body.data.id).expect(
       HttpStatus.Ok,
     );
 
     expect(getResponse.body).toEqual({
-      ...createResponse.body,
-      id: expect.any(String),
-      createdAt: expect.any(String),
+      data: {
+        type: ResourceType.Drivers,
+        id: expect.any(String),
+        attributes: {
+          ...createResponse.body.data.attributes,
+          createdAt: expect.any(String),
+        },
+      },
     });
   });
 
   it("should update driver by id; PUT /api/drivers/:id", async () => {
     const createResponse = await createDriver({
-      ...collectCorrectDriver(),
-      name: "Bad Name",
-      email: "bad-email@mail.ru",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Bad Name",
+          email: "bad-email@mail.ru",
+        },
+      },
     }).expect(HttpStatus.Created);
 
-    await updateDriver(createResponse.body.id, {
-      ...collectCorrectDriver(),
-      name: "Good Name",
-      email: "good-email@mail.ru",
+    await updateDriver(createResponse.body.data.id, {
+      data: {
+        ...collectCorrectDriver().data,
+        id: createResponse.body.data.id,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Good Name",
+          email: "good-email@mail.ru",
+        },
+      },
     }).expect(HttpStatus.NoContent);
 
-    const updatedDriver = await getByIdDriver(createResponse.body.id).expect(
-      HttpStatus.Ok,
-    );
+    const updatedDriver = await getByIdDriver(
+      createResponse.body.data.id,
+    ).expect(HttpStatus.Ok);
 
     expect(updatedDriver.body).toEqual({
-      ...createResponse.body,
-      id: createResponse.body.id,
-      name: "Good Name",
-      email: "good-email@mail.ru",
+      data: {
+        type: ResourceType.Drivers,
+        id: createResponse.body.data.id,
+        attributes: {
+          ...createResponse.body.data.attributes,
+          name: "Good Name",
+          email: "good-email@mail.ru",
+        },
+      },
     });
   });
 
   it("should delete driver by id; DELETE /api/drivers/:id", async () => {
     const createResponse = await createDriver({
-      ...collectCorrectDriver(),
-      name: "Devid",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "Devid",
+        },
+      },
     }).expect(HttpStatus.Created);
 
     await request
-      .delete(`${DRIVER_ROUTER}/${createResponse.body.id}`)
+      .delete(`${DRIVER_ROUTER}/${createResponse.body.data.id}`)
       .expect(HttpStatus.NoContent);
   });
 });

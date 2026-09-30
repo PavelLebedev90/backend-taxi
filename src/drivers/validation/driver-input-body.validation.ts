@@ -4,48 +4,50 @@ import { resourceTypeSchema } from "../../core/middlewares/validation/resource-t
 
 export const validationSchemaDriverInputBody = checkSchema(
   {
-    ...resourceTypeSchema(ResourceType.Drivers),
-    name: {
+    "data.type": {
+      ...resourceTypeSchema(ResourceType.Drivers),
+    },
+    "data.attributes.name": {
       isString: true,
       trim: true,
       isLength: { options: { min: 2, max: 15 } },
     },
-    phoneNumber: {
+    "data.attributes.phoneNumber": {
       isString: true,
       trim: true,
       isLength: { options: { min: 8, max: 15 } },
     },
-    email: {
+    "data.attributes.email": {
       isString: true,
       trim: true,
       isEmail: true,
       isLength: { options: { min: 5, max: 100 } },
     },
-    vehicleMake: {
+    "data.attributes.vehicleMake": {
       isString: true,
       trim: true,
       isLength: { options: { min: 3, max: 100 } },
     },
-    vehicleModel: {
+    "data.attributes.vehicleModel": {
       isString: true,
       trim: true,
       isLength: { options: { min: 2, max: 100 } },
     },
-    vehicleYear: {
+    "data.attributes.vehicleYear": {
       isInt: { options: { min: 1900, max: new Date().getFullYear() } },
     },
-    vehicleLicensePlate: {
+    "data.attributes.vehicleLicensePlate": {
       isString: true,
       trim: true,
       isLength: { options: { min: 6, max: 10 } },
     },
-    vehicleDescription: {
+    "data.attributes.vehicleDescription": {
       isString: true,
       trim: true,
       optional: { options: { nullable: true } },
       isLength: { options: { min: 10, max: 200 } },
     },
-    vehicleFeatures: {
+    "data.attributes.vehicleFeatures": {
       isArray: true,
       isEmpty: { negated: true },
       isIn: { options: [["wi-fi", "child-seat", "pet-friendly"]] },

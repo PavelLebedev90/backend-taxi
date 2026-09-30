@@ -1,3 +1,5 @@
+import { PaginatedView } from "../../core/types/queries";
+import { ResourceType } from "../../core/types/resource";
 import { VehicleFeature } from "./driver.types";
 
 type Vehicle = {
@@ -10,10 +12,22 @@ type Vehicle = {
 };
 
 export type DriverView = {
+  type: ResourceType.Drivers;
   id: string;
-  name: string;
-  phoneNumber: string;
-  email: string;
-  vehicle: Vehicle;
-  createdAt: Date;
+  attributes: {
+    name: string;
+    phoneNumber: string;
+    email: string;
+    vehicle: Vehicle;
+    createdAt: Date;
+  };
+};
+
+export type DriverDataView = {
+  data: DriverView;
+};
+
+export type DriverMetaView = {
+  meta: PaginatedView;
+  data: DriverView[];
 };

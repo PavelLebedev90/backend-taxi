@@ -1,16 +1,13 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { driversRepository } from "../repository/drivers.repository";
-import { mapDriverView } from "../mappers/driver-view";
+import { mapDriverDataView } from "../mappers/driver-view";
+import { driversService } from "../application/drivers.service";
+import { DriverDataView } from "../types/driver-view.types";
 
 export const getDriver = async (
   req: Request<{ id: string }>,
-  res: Response,
+  res: Response<DriverDataView>,
 ) => {
-  const driver = await driversRepository.findById(req.params.id);
-  if (!driver) {
-    res.sendStatus(HttpStatus.NotFound);
-    return;
-  }
-  res.status(HttpStatus.Ok).send(mapDriverView(driver));
+  const driver = await driversService.findByIdOrFail(req.params.id);
+  res.status(HttpStatus.Ok).send(mapDriverDataView(driver));
 };

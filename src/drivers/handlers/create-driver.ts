@@ -1,23 +1,21 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { Driver } from "../types/driver.types";
-import { ErrorMessage } from "../../core/types/validation-error";
-import { driversRepository } from "../repository/drivers.repository";
-import { DriverInputDto } from "../dto/driver.input.dto";
+import { DriverCreateInput } from "../dto/driver.input.dto";
 import { mapDriverInputToDTO } from "../mappers/driver-input-to-dto";
-import { mapDriverView } from "../mappers/driver-view";
+import { mapDriverDataView } from "../mappers/driver-view";
+import { driversService } from "../application/drivers.service";
+import { DriverDataView } from "../types/driver-view.types";
 
 export const createDriver = async (
-  req: Request<unknown, unknown, DriverInputDto>,
-  res: Response<Driver | ErrorMessage>,
+  req: Request<unknown, unknown, DriverCreateInput>,
+  res: Response<DriverDataView>,
 ) => {
-  const createdDriver = await driversRepository.create({
-    ...mapDriverInputToDTO(req.body),
+  const createdDriverId = await driversService.create({
+    ...mapDriverInputToDTO(req.body.data.attributes),
     createdAt: new Date(),
   });
-  if (!createdDriver) {
-    res.status(HttpStatus.NotFound);
-    return;
-  }
-  res.status(HttpStatus.Created).send(mapDriverView(createdDriver));
+  const driver = await driversService.findByIdOrFail(
+    createdDriverId.toString(),
+  );
+  res.status(HttpStatus.Created).send(mapDriverDataView(driver));
 };

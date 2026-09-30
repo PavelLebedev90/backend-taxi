@@ -1,8 +1,6 @@
-// Данные, которые клиент присылает при создании водителя
-
+import { ResourceType } from "../../core/types/resource";
 import { VehicleFeature } from "../types/driver.types";
 
-// (без служебных id и createdAt — их проставляет сервер).
 export type DriverInputDto = {
   name: string;
   phoneNumber: string;
@@ -13,4 +11,19 @@ export type DriverInputDto = {
   vehicleLicensePlate: string;
   vehicleDescription: string | null;
   vehicleFeatures: VehicleFeature[];
+};
+
+export type DriverCreateInput = {
+  data: {
+    type: ResourceType.Drivers;
+    attributes: DriverInputDto;
+  };
+};
+
+export type DriverUpdateInput = {
+  data: {
+    type: ResourceType.Drivers;
+    id: string;
+    attributes: DriverInputDto;
+  };
 };

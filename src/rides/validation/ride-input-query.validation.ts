@@ -1,17 +1,10 @@
 import { checkSchema } from "express-validator";
 import { SortDirection } from "../../core/types/queries";
+import { RideSortFields } from "../dto/ride-query.input.dto";
 
 const DEFAULT_PAGE_NUMBER = 1;
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_SORT_DIRECTION = SortDirection.DESC;
-
-const allowedSortFields = [
-  "clientName",
-  "price",
-  "createdAt",
-  "startedAt",
-  "finishedAt",
-];
 
 export const validationSchemaRideInputQuery = checkSchema(
   {
@@ -26,8 +19,8 @@ export const validationSchemaRideInputQuery = checkSchema(
       toInt: true,
     },
     sortBy: {
-      default: { options: allowedSortFields[0] },
-      isIn: { options: [allowedSortFields] },
+      default: { options: RideSortFields["CreatedAt"] },
+      isIn: { options: [Object.values(RideSortFields)] },
     },
     sortDirection: {
       default: { options: DEFAULT_SORT_DIRECTION },

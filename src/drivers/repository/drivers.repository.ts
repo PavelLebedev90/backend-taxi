@@ -1,20 +1,49 @@
-import { ObjectId } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 import { driverCollection } from "../../db/collections";
 import { Driver } from "../types/driver.types";
+import { DriverQueryInput } from "../dto/driver-query.input.dto";
 
 export const driversRepository = {
-  async getAll() {
-    return await driverCollection.find().toArray();
+  async getAll(queryDto: DriverQueryInput) {
+    const filters: Filter<Driver> = {};
+    const skip = (queryDto.pageNumber - 1) * queryDto.pageSize;
+    const filterFields = {
+      email: queryDto.searchDriverEmailTerm,
+      name: queryDto.searchDriverNameTerm,
+    };
+    Object.entries(filterFields).forEach(([key, value]) => {
+      if (value) {
+        if (!filters.$or) {
+          filters.$or = [];
+        }
+        filters.$or.push({
+          key: { $regex: value, $options: "i" },
+        });
+      }
+    });
+
+    if (queryDto.searchVehicleMakeTerm) {
+      filters["vehicle.make"] = {
+        $regex: queryDto.searchVehicleMakeTerm,
+        $options: "i",
+      };
+    }
+    const [items, totalCount] = await Promise.all([
+      driverCollection
+        .find(filters)
+        .sort(queryDto.sortBy, queryDto.sortDirection)
+        .skip(skip)
+        .limit(queryDto.pageSize)
+        .toArray(),
+      driverCollection.countDocuments(filters),
+    ]);
+    return { items, totalCount };
   },
   async findById(id: string) {
     return await driverCollection.findOne({ _id: new ObjectId(id) });
   },
   async create(bodyDriver: Driver) {
-    const createdDriver = await driverCollection.insertOne(bodyDriver);
-    const driver = await driversRepository.findById(
-      createdDriver.insertedId.toString(),
-    );
-    return driver;
+    return await driverCollection.insertOne(bodyDriver);
   },
   async update(paramId: string, bodyDriver: Omit<Driver, "createdAt">) {
     const updatedDriver = await driverCollection.updateOne(

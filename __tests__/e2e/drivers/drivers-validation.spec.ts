@@ -11,190 +11,302 @@ describe("Driver API body validation check", () => {
   setupDbLifecycle();
   it("should not create driver when incorrect body passed; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "   ",
-      phoneNumber: "    ",
-      email: "invalid email",
-      vehicleMake: "",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "   ",
+          phoneNumber: "    ",
+          email: "invalid email",
+          vehicleMake: "",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(4);
+  });
+  it("should not create driver when type is not valid; POST /drivers", async () => {
+    const invalidDataSet1 = await createDriver({
+      data: {
+        ...collectCorrectDriver().data,
+        type: "rides",
+      },
+    }).expect(HttpStatus.BadRequest);
+    expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
 
   it("should not create driver when name is null; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: null,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: null,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is undefined; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: undefined,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: undefined,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
 
   it("should not create driver when name is incorrect type; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: ["invalid type"],
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: ["invalid type"],
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is too short; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "A",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "A",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when name is too long; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "AAAAAAAAAAAAAAAA", // 16 characters, assuming maxLength is 15
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "AAAAAAAAAAAAAAAA", // 16 characters, assuming maxLength is 15
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
 
   it("should create driver when name is valid; POST /drivers", async () => {
     const validDriver = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+        },
+      },
     }).expect(HttpStatus.Created);
-    expect(validDriver.body).toHaveProperty("id");
+    expect(validDriver.body.data).toHaveProperty("id");
   });
 
   it("should not create driver when email is too long; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      email: "a".repeat(101) + "@example.com", // 101 characters, assuming maxLength is 100
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          email: "a".repeat(101) + "@example.com", // 101 characters, assuming maxLength is 100
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when email is empty; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      email: "  ",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          email: "  ",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when email is invalid format; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      email: "not-an-email@",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          email: "not-an-email@",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is invalid format; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: "not-a-number",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: "not-a-number",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is null; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: null,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: null,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is too large; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: new Date().getFullYear() + 10,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: new Date().getFullYear() + 10,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleYear is too small; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1899,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: 1899,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleFeatures is not Array; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: "not-an-array",
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: 1934,
+          vehicleFeatures: "not-an-array",
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should create driver when vehicleFeatures is empty Array; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: [],
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: 1934,
+          vehicleFeatures: [],
+        },
+      },
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicle.features).toHaveLength(0);
+    expect(invalidDataSet1.body.data.attributes.vehicle.features).toHaveLength(
+      0,
+    );
   });
   it("should not create driver when vehicleFeatures is undefined; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: undefined,
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          name: "John Doe",
+          vehicleYear: 1934,
+          vehicleFeatures: undefined,
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should not create driver when vehicleFeatures has not valid item; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: [
-        "not-a-valid-feature",
-        VehicleFeature.WiFi,
-        VehicleFeature.PetFriendly,
-      ],
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          vehicleYear: 1934,
+          vehicleFeatures: [
+            "not-a-valid-feature",
+            VehicleFeature.WiFi,
+            VehicleFeature.PetFriendly,
+          ],
+        },
+      },
     }).expect(HttpStatus.BadRequest);
     expect(invalidDataSet1.body.errorMessages).toHaveLength(1);
   });
   it("should create driver when vehicleFeatures has valid items; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: [VehicleFeature.WiFi, VehicleFeature.PetFriendly],
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          vehicleYear: 1934,
+          vehicleFeatures: [VehicleFeature.WiFi, VehicleFeature.PetFriendly],
+        },
+      },
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicle.features).toHaveLength(2);
+    expect(invalidDataSet1.body.data.attributes.vehicle.features).toHaveLength(
+      2,
+    );
   });
   it("should create driver when vehicleFeatures has valid items; POST /drivers", async () => {
     const invalidDataSet1 = await createDriver({
-      ...collectCorrectDriver(),
-      name: "John Doe",
-      vehicleYear: 1934,
-      vehicleFeatures: [
-        VehicleFeature.WiFi,
-        VehicleFeature.PetFriendly,
-        VehicleFeature.ChildSeat,
-        VehicleFeature.WiFi,
-      ],
+      data: {
+        ...collectCorrectDriver().data,
+        attributes: {
+          ...collectCorrectDriver().data.attributes,
+          vehicleYear: 1934,
+          vehicleFeatures: [
+            VehicleFeature.WiFi,
+            VehicleFeature.PetFriendly,
+            VehicleFeature.ChildSeat,
+            VehicleFeature.WiFi,
+          ],
+        },
+      },
     }).expect(HttpStatus.Created);
-    expect(invalidDataSet1.body.vehicle.features).toHaveLength(4);
+    expect(invalidDataSet1.body.data.attributes.vehicle.features).toHaveLength(
+      4,
+    );
   });
   it("should not delete driver is currently on a job; DELETE /drivers", async () => {
     const createdDriver = await createDriver(collectCorrectDriver());
 
-    await createRide(collectCorrectRide(createdDriver.body.id));
+    await createRide(collectCorrectRide(createdDriver.body.data.id));
 
-    const invalidData = await deleteDriver(createdDriver.body.id).expect(
+    const invalidData = await deleteDriver(createdDriver.body.data.id).expect(
       HttpStatus.BadRequest,
     );
     expect(invalidData.body.errorMessages[0]).toEqual({
-      field: "driverId",
-      message: "The driver is currently on a job",
+      field: "id",
+      message: "Driver has an active ride. Complete or cancel the ride first",
     });
   });
 });

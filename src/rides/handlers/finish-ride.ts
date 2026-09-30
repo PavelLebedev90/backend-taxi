@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { ridesRepository } from "../repository/rides.repository";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { errorMessagesFormatter } from "../../core/utils/formatter/error-messages.formatter";
+import { ridesService } from "../application/rides.service";
 
 export const finishRide = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const ride = await ridesRepository.findById(req.params.id);
+  const ride = await ridesService.findById(req.params.id);
   if (ride?.finishedAt) {
     res
       .status(HttpStatus.BadRequest)
@@ -18,7 +18,7 @@ export const finishRide = async (
       );
     return;
   }
-  await ridesRepository.finishRide(req.params.id, new Date());
+  await ridesService.finishRide(req.params.id, new Date());
 
   res.sendStatus(HttpStatus.NoContent);
 };
