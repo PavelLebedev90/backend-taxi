@@ -6,13 +6,14 @@ import { mapRideDataView } from "../mappers/ride-view";
 import { mapRideInputToDTO } from "../mappers/ride-input-to-dto";
 import { RideDataView } from "../types/rides-view.types";
 import { ridesService } from "../application/rides.service";
-import { driversService } from "../../drivers/application/drivers.service";
+import { ridesQueryRepository } from "../repository/rides-query.repository";
+import { driversQueryRepository } from "../../drivers/repository/drivers-query.repository";
 
 export const createRide = async (
   req: Request<unknown, unknown, RideCreateInput>,
   res: Response<RideDataView | ErrorMessage>,
 ) => {
-  const driver = await driversService.findByIdOrFail(
+  const driver = await driversQueryRepository.findByIdOrFail(
     req.body.data.attributes.driverId,
   );
 
@@ -24,6 +25,8 @@ export const createRide = async (
     finishedAt: null,
   });
 
-  const ride = await ridesService.findByIdOrFail(createdRideId.toString());
+  const ride = await ridesQueryRepository.findByIdOrFail(
+    createdRideId.toString(),
+  );
   res.status(HttpStatus.Created).send(mapRideDataView(ride));
 };

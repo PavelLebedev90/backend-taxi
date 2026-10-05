@@ -1,24 +1,15 @@
 import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { errorMessagesFormatter } from "../../core/utils/formatter/error-messages.formatter";
 import { ridesService } from "../application/rides.service";
+import { ridesQueryRepository } from "../repository/rides-query.repository";
 
 export const finishRide = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const ride = await ridesService.findById(req.params.id);
-  if (ride?.finishedAt) {
-    res
-      .status(HttpStatus.BadRequest)
-      .send(
-        errorMessagesFormatter([
-          { field: "id", message: "Ride already finished" },
-        ]),
-      );
-    return;
-  }
-  await ridesService.finishRide(req.params.id, new Date());
+  const ride = await ridesQueryRepository.findByIdOrFail(req.params.id);
+
+  await ridesService.finishRide(req.params.id, new Date(), ride);
 
   res.sendStatus(HttpStatus.NoContent);
 };
