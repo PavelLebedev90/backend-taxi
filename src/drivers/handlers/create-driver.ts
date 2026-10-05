@@ -5,6 +5,7 @@ import { mapDriverInputToDTO } from "../mappers/driver-input-to-dto";
 import { mapDriverDataView } from "../mappers/driver-view";
 import { driversService } from "../application/drivers.service";
 import { DriverDataView } from "../types/driver-view.types";
+import { driversQueryRepository } from "../repository/drivers-query.repository";
 
 export const createDriver = async (
   req: Request<unknown, unknown, DriverCreateInput>,
@@ -14,7 +15,7 @@ export const createDriver = async (
     ...mapDriverInputToDTO(req.body.data.attributes),
     createdAt: new Date(),
   });
-  const driver = await driversService.findByIdOrFail(
+  const driver = await driversQueryRepository.findByIdOrFail(
     createdDriverId.toString(),
   );
   res.status(HttpStatus.Created).send(mapDriverDataView(driver));
