@@ -1,0 +1,526 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+
+tags:
+  - name: Users
+    description: API for managing users
+
+paths:
+  /api/users/login:
+    post:
+      summary: Log in a user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginInput"
+      responses:
+        200:
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDataViewOutput"
+        401:
+          description: Invalid login or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+  /api/users:
+    get:
+      summary: Get a paginated and sorted list of users
+      tags: [Users]
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: query
+          name: pageNumber
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            enum: [createdAt, name, email]
+            default: createdAt
+          description: Field to sort by
+        - in: query
+          name: sortDirection
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Sort direction
+        - in: query
+          name: searchUserEmailTerm
+          schema:
+            type: string
+          required: false
+          description: Search users by email
+        - in: query
+          name: searchUserFullNameTerm
+          schema:
+            type: string
+          required: false
+          description: Search users by full name
+      responses:
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListPaginatedOutput"
+    post:
+      summary: Create a user
+      tags: [Users]
+      security:
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateInput"
+      responses:
+        201:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserOutput"
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/users/{id}:
+    get:
+      summary: Get a user by ID
+      tags: [Users]
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      responses:
+        200:
+          description: The requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDataViewOutput"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+    put:
+      summary: Update a user by ID
+      tags: [Users]
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateInput"
+      responses:
+        204:
+          description: User updated successfully
+        400:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+    delete:
+      summary: Delete a user by ID
+      tags: [Users]
+      security:
+        - BasicAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: string
+            example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+      responses:
+        204:
+          description: User deleted successfully
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  schemas:
+    UserOutput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [users]
+              example: users
+            id:
+              type: string
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            attributes:
+              type: object
+              required:
+                - name
+                - email
+                - createdAt
+              properties:
+                name:
+                  type: string
+                  example: Jane Doe
+                email:
+                  type: string
+                  format: email
+                  example: jane.doe@example.com
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: 2023-03-05T12:00:00Z
+
+    UserDataViewOutput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [users]
+              example: users
+            id:
+              type: string
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            attributes:
+              type: object
+              required:
+                - firstName
+                - lastName
+                - middleName
+                - phoneNumber
+                - email
+                - createdAt
+              properties:
+                firstName:
+                  type: string
+                  example: Jane
+                lastName:
+                  type: string
+                  example: Doe
+                middleName:
+                  type: string
+                  nullable: true
+                  example: null
+                phoneNumber:
+                  type: string
+                  example: "+1234567890"
+                email:
+                  type: string
+                  format: email
+                  example: jane.doe@example.com
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: 2023-03-05T12:00:00Z
+
+    UserListPaginatedOutput:
+      type: object
+      required:
+        - data
+        - meta
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+              - id
+              - attributes
+            properties:
+              type:
+                type: string
+                enum: [users]
+                example: users
+              id:
+                type: string
+                example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+              attributes:
+                type: object
+                required:
+                  - firstName
+                  - lastName
+                  - middleName
+                  - phoneNumber
+                  - email
+                  - createdAt
+                properties:
+                  firstName:
+                    type: string
+                    example: Jane
+                  lastName:
+                    type: string
+                    example: Doe
+                  middleName:
+                    type: string
+                    nullable: true
+                    example: null
+                  phoneNumber:
+                    type: string
+                    example: "+1234567890"
+                  email:
+                    type: string
+                    format: email
+                    example: jane.doe@example.com
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: 2023-03-05T12:00:00Z
+        meta:
+          $ref: "#/components/schemas/PaginatedOutput"
+    UserCreateInput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [users]
+              description: The resource type
+              example: users
+            attributes:
+              $ref: "#/components/schemas/UserCreateAttributes"
+
+    UserUpdateInput:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - id
+            - attributes
+          properties:
+            type:
+              type: string
+              enum: [users]
+              description: The resource type
+              example: users
+            id:
+              type: string
+              description: The unique identifier of the user
+              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+            attributes:
+              $ref: "#/components/schemas/UserUpdateAttributes"
+
+    UserLoginInput:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: janedoe
+        password:
+          type: string
+          format: password
+          example: "P@ssw0rd123"
+
+    UserCreateAttributes:
+      type: object
+      required:
+        - login
+        - password
+        - email
+        - firstName
+        - lastName
+        - middleName
+        - phoneNumber
+      properties:
+        login:
+          type: string
+          example: janedoe
+        password:
+          type: string
+          format: password
+          example: "P@ssw0rd123"
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+        middleName:
+          type: string
+          nullable: true
+          example: null
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+    UserUpdateAttributes:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - middleName
+        - phoneNumber
+      properties:
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+        middleName:
+          type: string
+          nullable: true
+          example: null
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+    PaginatedOutput:
+      type: object
+      required:
+        - page
+        - pageSize
+        - pageCount
+        - totalCount
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page
+          example: 10
+        pageCount:
+          type: integer
+          description: Total number of pages available
+          example: 5
+        totalCount:
+          type: integer
+          description: Total number of items across all pages
+          example: 100
+    ValidationErrorOutput:
+      type: object
+      required:
+        - status
+        - detail
+        - source
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code of the error
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "Name must be at least 2 characters long"
+        source:
+          type: object
+          properties:
+            pointer:
+              type: string
+              description: JSON pointer to the field that caused the error
+              example: "name"
+        code:
+          type: string
+          nullable: true
+          description: Optional error code
+          example: null
+          default: null
+
+    ValidationErrorListOutput:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationErrorOutput"
+          description: List of validation errors
