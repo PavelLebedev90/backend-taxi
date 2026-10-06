@@ -9,10 +9,10 @@ export const collectCorrectUser = (): UserCreateInput => {
         email: "johndoe@example.com",
         firstName: "John",
         lastName: "Doe",
-        phoneNumber: "+1234567890",
-        password: "securePassword123",
+        phoneNumber: "+12025550123",
+        password: "securePass1",
         login: "johndoe",
-        middleName: "M",
+        middleName: "Mi",
       },
     },
   };

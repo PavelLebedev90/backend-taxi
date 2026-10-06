@@ -3,7 +3,6 @@ import { ObjectId } from "mongodb";
 import { usersRepository } from "../repository/users.repository";
 import { User } from "../types/user.types";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { ridesService } from "../../rides/application/rides.service";
 import { UserLoginInput } from "../dto/user.input.dto";
 
 export const usersService = {
@@ -80,20 +79,6 @@ export const usersService = {
   },
 
   async delete(id: string): Promise<void> {
-    const activeRide = await ridesService.findActiveRideByDriverId(id);
-
-    if (activeRide) {
-      throw new Error(
-        "User has an active ride. Complete or cancel the ride first",
-        {
-          cause: {
-            status: HttpStatus.BadRequest,
-            field: "id",
-          },
-        },
-      );
-    }
-
     const isDeleted = await usersRepository.delete(id);
     if (!isDeleted) {
       throw new Error(`not found User by id=${id}`, {
