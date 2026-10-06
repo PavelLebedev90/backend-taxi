@@ -1,10 +1,10 @@
-import express from "express";
+import express, { Express } from "express";
 import { setupApp } from "./setup-app";
 import { MONGO_URL_DEV, PORT } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 
+const app: Express = express();
 const bootstrap = async () => {
-  const app = express();
   setupApp(app);
 
   // await runDB(MONGO_URL);
@@ -18,3 +18,4 @@ const bootstrap = async () => {
 };
 
 bootstrap();
+export default app;
