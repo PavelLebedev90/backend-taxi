@@ -25,7 +25,14 @@ export const usersService = {
     }
     const passwordHash = await bcrypt.hash(user.password, 10);
     const { insertedId } = await usersRepository.create({
-      ...user,
+      createdAt: user.createdAt,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      middleName: user.middleName,
+      phoneNumber: user.phoneNumber,
+      fullName: user.fullName,
+      login: user.login,
       passwordHash: passwordHash,
     });
     return insertedId;

@@ -7,6 +7,6 @@ export const loginAuth = async (
   req: Request<unknown, unknown, AuthLoginInput>,
   res: Response<{ token: string }>,
 ) => {
-  const authId = await authService.loginAuth(req.body);
-  res.status(HttpStatus.Ok).send({ token: authId.toString() });
+  const token = await authService.loginAuth(req.body);
+  res.status(HttpStatus.Ok).send(token);
 };

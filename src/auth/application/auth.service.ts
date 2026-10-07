@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
-import { ObjectId } from "mongodb";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { AuthLoginInput } from "../dto/user.input.dto";
 import { usersService } from "../../users/application/users.service";
+import { JWTService } from "../../core/application/jwt.service";
 
 export const authService = {
-  async loginAuth(loginInfo: AuthLoginInput): Promise<ObjectId> {
+  async loginAuth(loginInfo: AuthLoginInput): Promise<{ token: string }> {
     const user = await usersService.findUserByLoginOrEmail(
       loginInfo.loginOrEmail,
     );
@@ -35,6 +35,7 @@ export const authService = {
         },
       );
     }
-    return user._id;
+    const token = JWTService.createToken(user);
+    return token;
   },
 };

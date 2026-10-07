@@ -25,7 +25,7 @@ export const setupApp = (app: Express) => {
 
   setupSwagger(app);
 
-  app.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+  app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (err instanceof Error) {
       const cause = err.cause as { status: number; field: string };
       res.status(cause?.status ?? 500).send(
