@@ -8,6 +8,29 @@ tags:
     description: API for managing users
 
 paths:
+  /api/users/login:
+    post:
+      summary: Log in a user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginInput"
+      responses:
+        200:
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDataViewOutput"
+        401:
+          description: Invalid login or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
   /api/users:
     get:
       summary: Get a paginated and sorted list of users
@@ -361,6 +384,20 @@ components:
               example: 5f1a2b3c4d5e6f7g8h9i0j1k2
             attributes:
               $ref: "#/components/schemas/UserUpdateAttributes"
+
+    UserLoginInput:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: janedoe
+        password:
+          type: string
+          format: password
+          example: "P@ssw0rd123"
 
     UserCreateAttributes:
       type: object

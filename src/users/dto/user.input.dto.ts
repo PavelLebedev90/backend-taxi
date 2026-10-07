@@ -24,8 +24,3 @@ export type UserUpdateInput = {
     attributes: Omit<UserInputDto, "login" | "password">;
   };
 };
-
-export type UserLoginInput = {
-  loginOrEmail: string;
-  password: string;
-};

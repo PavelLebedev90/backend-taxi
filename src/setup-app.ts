@@ -11,6 +11,8 @@ import { HttpStatus } from "./core/types/http-statuses";
 import { errorMessagesFormatter } from "./core/utils/formatter/error-messages.formatter";
 import { usersRouter } from "./users/routers/users.router";
 import { USER_ROUTE } from "./core/constants/users-router.path";
+import { AUTH_ROUTE } from "./core/constants/auth-router.path";
+import { authRouter } from "./auth/routers/auth.router";
 
 export const setupApp = (app: Express) => {
   app.use(express.json());
@@ -19,6 +21,7 @@ export const setupApp = (app: Express) => {
   app.use(`${BASE_ROUTE}${RIDE_ROUTE.RIDES}`, ridesRouter);
   app.use(`${BASE_ROUTE}${USER_ROUTE.USERS}`, usersRouter);
   app.use(`${BASE_ROUTE}${TESTING_ROUTE.TESTING}`, testingRouter);
+  app.use(`${BASE_ROUTE}${AUTH_ROUTE.AUTH}`, authRouter);
 
   setupSwagger(app);
 

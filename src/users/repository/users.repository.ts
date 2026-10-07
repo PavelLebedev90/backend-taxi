@@ -10,6 +10,9 @@ export const usersRepository = {
     return await userCollection.insertOne(bodyUser);
   },
   async findUserByLoginOrEmail(loginOrEmail: string) {
+    //TODO DELETE
+    const users = await userCollection.find().toArray();
+    console.log(users, loginOrEmail);
     return await userCollection.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
     });
