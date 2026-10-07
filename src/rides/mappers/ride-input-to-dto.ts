@@ -1,11 +1,10 @@
-import { WithId } from "mongodb";
 import { RideInputDto } from "../dto/ride.input.dto";
 import { Ride } from "../types/rides.types";
-import { Driver } from "../../drivers/types/driver.types";
+import { DriverDataView } from "../../drivers/types/driver-view.types";
 
 export function mapRideInputToDTO(
   dto: RideInputDto,
-  driver: WithId<Driver>,
+  driver: DriverDataView,
 ): Omit<Ride, "createdAt" | "finishedAt" | "startedAt" | "updatedAt"> {
   return {
     clientName: dto.clientName,
@@ -14,14 +13,14 @@ export function mapRideInputToDTO(
       to: dto.toAddress,
     },
     driver: {
-      id: driver._id.toString(),
-      name: driver.name,
+      id: driver.data.id,
+      name: driver.data.attributes.name,
     },
     currency: dto.currency,
     price: dto.price,
     vehicle: {
-      licensePlate: driver.vehicle.licensePlate,
-      name: `${driver.vehicle.make} ${driver.vehicle.model}`,
+      licensePlate: driver.data.attributes.vehicle.licensePlate,
+      name: `${driver.data.attributes.vehicle.make} ${driver.data.attributes.vehicle.model}`,
     },
   };
 }

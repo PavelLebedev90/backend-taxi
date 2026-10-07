@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { ErrorMessage } from "../../core/types/validation-error";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { RideCreateInput } from "../dto/ride.input.dto";
-import { mapRideDataView } from "../mappers/ride-view";
 import { mapRideInputToDTO } from "../mappers/ride-input-to-dto";
 import { RideDataView } from "../types/rides-view.types";
 import { ridesService } from "../application/rides.service";
@@ -28,5 +27,5 @@ export const createRide = async (
   const ride = await ridesQueryRepository.findByIdOrFail(
     createdRideId.toString(),
   );
-  res.status(HttpStatus.Created).send(mapRideDataView(ride));
+  res.status(HttpStatus.Created).send(ride);
 };
