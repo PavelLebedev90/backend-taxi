@@ -17,8 +17,8 @@ export const mapDriverView = (driver: WithId<Driver>): DriverView => {
   };
 };
 
-export function mapDriverDataView(ride: WithId<Driver>): DriverDataView {
+export function mapDriverDataView(driver: WithId<Driver>): DriverDataView {
   return {
-    data: mapDriverView(ride),
+    data: mapDriverView(driver),
   };
 }

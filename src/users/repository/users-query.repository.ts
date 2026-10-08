@@ -1,11 +1,14 @@
-import { Filter, ObjectId, WithId } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { User } from "../types/user.types";
 import { UserQueryInput } from "../dto/user-query.input.dto";
 import { userCollection } from "../../db/collections";
+import { UserDataView, UserMetaView } from "../types/user-view.types";
+import { mapUserDataView, mapUserView } from "../mappers/user-view";
+import { mapDataPaginatedView } from "../../core/mappers/data-paginated-view";
 
 export const usersQueryRepository = {
-  async getAll(queryDto: UserQueryInput) {
+  async getAll(queryDto: UserQueryInput): Promise<UserMetaView> {
     const filters: Filter<User> = {};
     const skip = (queryDto.pageNumber - 1) * queryDto.pageSize;
     const filterFields = {
@@ -32,13 +35,15 @@ export const usersQueryRepository = {
         .toArray(),
       userCollection.countDocuments(filters),
     ]);
-    return { items, totalCount };
+    const users = items.map(mapUserView);
+    return mapDataPaginatedView(users, {
+      pageNumber: queryDto.pageNumber,
+      pageSize: queryDto.pageSize,
+      totalCount,
+    });
   },
-  async findById(id: string) {
-    return await userCollection.findOne({ _id: new ObjectId(id) });
-  },
-  async findByIdOrFail(id: string): Promise<WithId<User>> {
-    const user = await this.findById(id);
+  async findByIdOrFail(id: string): Promise<UserDataView> {
+    const user = await userCollection.findOne({ _id: new ObjectId(id) });
     if (!user) {
       throw new Error(`user by id=${id} not found`, {
         cause: {
@@ -47,6 +52,6 @@ export const usersQueryRepository = {
         },
       });
     }
-    return user;
+    return mapUserDataView(user);
   },
 };

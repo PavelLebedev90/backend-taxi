@@ -6,7 +6,6 @@ import { collectCorrectUser } from "../../utils/users/collect-correct.user";
 import { createUser } from "../../utils/users/create.user";
 import { getByIdUser } from "../../utils/users/get-by-id.user";
 import { updateUser } from "../../utils/users/update.user";
-import { loginUser } from "../../utils/users/login.user";
 import { setupDbLifecycle } from "../../utils/setup-db";
 import { ResourceType } from "../../../src/core/types/resource";
 
@@ -24,9 +23,7 @@ describe("User API", () => {
         },
       },
     };
-    const createResponse = await createUser(newUser).expect(
-      HttpStatus.Created,
-    );
+    const createResponse = await createUser(newUser).expect(HttpStatus.Created);
 
     expect(createResponse.body).toEqual({
       data: {
@@ -43,9 +40,7 @@ describe("User API", () => {
       },
     });
     expect(createResponse.body.data.attributes).not.toHaveProperty("login");
-    expect(createResponse.body.data.attributes).not.toHaveProperty(
-      "password",
-    );
+    expect(createResponse.body.data.attributes).not.toHaveProperty("password");
     expect(createResponse.body.data.attributes).not.toHaveProperty(
       "passwordHash",
     );
@@ -111,9 +106,7 @@ describe("User API", () => {
   });
 
   it("should return 404 when user by id not found; GET /api/users/:id", async () => {
-    await getByIdUser("000000000000000000000000").expect(
-      HttpStatus.NotFound,
-    );
+    await getByIdUser("000000000000000000000000").expect(HttpStatus.NotFound);
   });
 
   it("should update user by id; PUT /api/users/:id", async () => {
@@ -193,64 +186,12 @@ describe("User API", () => {
       .delete(`${USER_ROUTER}/${createResponse.body.data.id}`)
       .expect(HttpStatus.NoContent);
 
-    await getByIdUser(createResponse.body.data.id).expect(
-      HttpStatus.NotFound,
-    );
+    await getByIdUser(createResponse.body.data.id).expect(HttpStatus.NotFound);
   });
 
   it("should return 400 when deleting non-existing user; DELETE /api/users/:id", async () => {
     await request
       .delete(`${USER_ROUTER}/000000000000000000000000`)
       .expect(HttpStatus.BadRequest);
-  });
-
-  it("should login user with valid credentials; POST /api/users/login", async () => {
-    const createResponse = await createUser({
-      data: {
-        ...collectCorrectUser().data,
-        attributes: {
-          ...collectCorrectUser().data.attributes,
-          login: "loginuser",
-          email: "loginuser@example.com",
-          password: "securePass1",
-        },
-      },
-    }).expect(HttpStatus.Created);
-
-    await loginUser({
-      loginOrEmail: "loginuser",
-      password: "securePass1",
-    }).expect(HttpStatus.Ok);
-
-    await loginUser({
-      loginOrEmail: createResponse.body.data.attributes.email,
-      password: "securePass1",
-    }).expect(HttpStatus.Ok);
-  });
-
-  it("should not login user with invalid password; POST /api/users/login", async () => {
-    await createUser({
-      data: {
-        ...collectCorrectUser().data,
-        attributes: {
-          ...collectCorrectUser().data.attributes,
-          login: "wrongpass",
-          email: "wrongpass@example.com",
-          password: "securePass1",
-        },
-      },
-    }).expect(HttpStatus.Created);
-
-    await loginUser({
-      loginOrEmail: "wrongpass",
-      password: "incorrectPass",
-    }).expect(HttpStatus.Unauthorized);
-  });
-
-  it("should not login not existing user; POST /api/users/login", async () => {
-    await loginUser({
-      loginOrEmail: "ghostuser",
-      password: "securePass1",
-    }).expect(HttpStatus.NotFound);
   });
 });

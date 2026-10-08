@@ -45,26 +45,9 @@ export const validationSchemaUserRegistrationInputBody = checkSchema(
     "data.attributes.login": {
       isString: true,
       trim: true,
-      toLowerCase: true,
       isLength: { options: { min: 2, max: 15 } },
     },
     "data.attributes.password": {
-      isString: true,
-      trim: true,
-      isLength: { options: { min: 8, max: 15 } },
-    },
-  },
-  ["body"],
-);
-
-export const validationSchemaUserLoginInputBody = checkSchema(
-  {
-    loginOrEmail: {
-      isString: true,
-      trim: true,
-      isLength: { options: { min: 2, max: 100 } },
-    },
-    password: {
       isString: true,
       trim: true,
       isLength: { options: { min: 8, max: 15 } },

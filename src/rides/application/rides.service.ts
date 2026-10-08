@@ -2,6 +2,7 @@ import { ObjectId, WithId } from "mongodb";
 import { ridesRepository } from "../../rides/repository/rides.repository";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { Ride } from "../types/rides.types";
+import { RideDataView } from "../types/rides-view.types";
 
 export const ridesService = {
   async create(ride: Ride): Promise<ObjectId> {
@@ -26,9 +27,9 @@ export const ridesService = {
   async finishRide(
     id: string,
     finishedAt: Date,
-    ride: WithId<Ride>,
+    ride: RideDataView,
   ): Promise<void> {
-    if (ride?.finishedAt) {
+    if (ride.data.attributes.finishedAt) {
       throw new Error(`Ride already finished`, {
         cause: {
           status: HttpStatus.BadRequest,

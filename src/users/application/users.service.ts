@@ -3,18 +3,18 @@ import { ObjectId } from "mongodb";
 import { usersRepository } from "../repository/users.repository";
 import { User } from "../types/user.types";
 import { HttpStatus } from "../../core/types/http-statuses";
-import { UserLoginInput } from "../dto/user.input.dto";
 
 export const usersService = {
   async findById(id: string) {
     return await usersRepository.findById(id);
   },
+  async findUserByLoginOrEmail(loginOrEmail: string) {
+    return await usersRepository.findUserByLoginOrEmail(loginOrEmail);
+  },
   async create(
     user: Omit<User, "passwordHash"> & { password: string },
   ): Promise<ObjectId> {
-    const existingUser = await usersRepository.findUserByLoginOrEmail(
-      user.email,
-    );
+    const existingUser = await this.findUserByLoginOrEmail(user.email);
     if (existingUser) {
       throw new Error(`User with email=${user.email} already exists`, {
         cause: {
@@ -25,44 +25,18 @@ export const usersService = {
     }
     const passwordHash = await bcrypt.hash(user.password, 10);
     const { insertedId } = await usersRepository.create({
-      ...user,
+      createdAt: user.createdAt,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      middleName: user.middleName,
+      phoneNumber: user.phoneNumber,
+      fullName: user.fullName,
+      login: user.login,
       passwordHash: passwordHash,
     });
     return insertedId;
   },
-  async loginUser(loginInfo: UserLoginInput): Promise<ObjectId> {
-    const user = await usersRepository.findUserByLoginOrEmail(
-      loginInfo.loginOrEmail,
-    );
-    if (!user) {
-      throw new Error(
-        `not found User by loginOrEmail=${loginInfo.loginOrEmail}`,
-        {
-          cause: {
-            status: HttpStatus.NotFound,
-            field: "loginOrEmail",
-          },
-        },
-      );
-    }
-    const isPasswordValid = await bcrypt.compare(
-      loginInfo.password,
-      user.passwordHash,
-    );
-    if (!isPasswordValid) {
-      throw new Error(
-        `Invalid credentials for loginOrEmail=${loginInfo.loginOrEmail}`,
-        {
-          cause: {
-            status: HttpStatus.Unauthorized,
-            field: "loginOrEmail",
-          },
-        },
-      );
-    }
-    return user._id;
-  },
-
   async update(
     id: string,
     dto: Omit<User, "createdAt" | "passwordHash" | "login">,

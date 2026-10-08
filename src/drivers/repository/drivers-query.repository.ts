@@ -1,11 +1,14 @@
-import { Filter, ObjectId, WithId } from "mongodb";
+import { Filter, ObjectId } from "mongodb";
 import { driverCollection } from "../../db/collections";
 import { Driver } from "../types/driver.types";
 import { DriverQueryInput } from "../dto/driver-query.input.dto";
 import { HttpStatus } from "../../core/types/http-statuses";
+import { DriverDataView, DriverMetaView } from "../types/driver-view.types";
+import { mapDriverDataView, mapDriverView } from "../mappers/driver-view";
+import { mapDataPaginatedView } from "../../core/mappers/data-paginated-view";
 
 export const driversQueryRepository = {
-  async getAll(queryDto: DriverQueryInput) {
+  async getAll(queryDto: DriverQueryInput): Promise<DriverMetaView> {
     const filters: Filter<Driver> = {};
     const skip = (queryDto.pageNumber - 1) * queryDto.pageSize;
     const filterFields = {
@@ -38,13 +41,15 @@ export const driversQueryRepository = {
         .toArray(),
       driverCollection.countDocuments(filters),
     ]);
-    return { items, totalCount };
+    const drivers = items.map(mapDriverView);
+    return mapDataPaginatedView(drivers, {
+      pageNumber: queryDto.pageNumber,
+      pageSize: queryDto.pageSize,
+      totalCount,
+    });
   },
-  async findById(id: string) {
-    return await driverCollection.findOne({ _id: new ObjectId(id) });
-  },
-  async findByIdOrFail(id: string): Promise<WithId<Driver>> {
-    const driver = await this.findById(id);
+  async findByIdOrFail(id: string): Promise<DriverDataView> {
+    const driver = await driverCollection.findOne({ _id: new ObjectId(id) });
     if (!driver) {
       throw new Error(`driver by id=${id} not found`, {
         cause: {
@@ -53,6 +58,6 @@ export const driversQueryRepository = {
         },
       });
     }
-    return driver;
+    return mapDriverDataView(driver);
   },
 };

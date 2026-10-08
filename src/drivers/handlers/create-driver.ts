@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { HttpStatus } from "../../core/types/http-statuses";
 import { DriverCreateInput } from "../dto/driver.input.dto";
 import { mapDriverInputToDTO } from "../mappers/driver-input-to-dto";
-import { mapDriverDataView } from "../mappers/driver-view";
 import { driversService } from "../application/drivers.service";
 import { DriverDataView } from "../types/driver-view.types";
 import { driversQueryRepository } from "../repository/drivers-query.repository";
@@ -18,5 +17,5 @@ export const createDriver = async (
   const driver = await driversQueryRepository.findByIdOrFail(
     createdDriverId.toString(),
   );
-  res.status(HttpStatus.Created).send(mapDriverDataView(driver));
+  res.status(HttpStatus.Created).send(driver);
 };

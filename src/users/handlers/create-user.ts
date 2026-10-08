@@ -5,7 +5,6 @@ import { usersService } from "../application/users.service";
 import { UserDataView } from "../types/user-view.types";
 import { mapUserInputToDTO } from "../mappers/user-input-to-dto";
 import { usersQueryRepository } from "../repository/users-query.repository";
-import { mapUserDataView } from "../mappers/user-view";
 
 export const createUser = async (
   req: Request<unknown, unknown, UserCreateInput>,
@@ -20,5 +19,5 @@ export const createUser = async (
   const user = await usersQueryRepository.findByIdOrFail(
     createdUserId.toString(),
   );
-  res.status(HttpStatus.Created).send(mapUserDataView(user));
+  res.status(HttpStatus.Created).send(user);
 };

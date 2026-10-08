@@ -5,7 +5,6 @@ import { inputResultValidationErrors } from "../../core/middlewares/validation/i
 import { validationSchemeParamId } from "../../core/middlewares/validation/param-id.validation";
 import {
   validationSchemaUserInputBody,
-  validationSchemaUserLoginInputBody,
   validationSchemaUserRegistrationInputBody,
 } from "../validation/user-input-body.validation";
 import { validationSchemaUserInputQuery } from "../validation/user-input-query.validation";
@@ -13,7 +12,6 @@ import { USER_ROUTE } from "../../core/constants/users-router.path";
 import { deleteUser } from "../handlers/delete-user";
 import { updateUser } from "../handlers/update-user";
 import { createUser } from "../handlers/create-user";
-import { loginUser } from "../handlers/login-user";
 
 export const usersRouter = Router({});
 
@@ -36,12 +34,7 @@ usersRouter.post(
   inputResultValidationErrors,
   createUser,
 );
-usersRouter.post(
-  USER_ROUTE.LOGIN,
-  validationSchemaUserLoginInputBody,
-  inputResultValidationErrors,
-  loginUser,
-);
+
 usersRouter.put(
   USER_ROUTE.BY_ID,
   validationSchemeParamId,
