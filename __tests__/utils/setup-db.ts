@@ -1,19 +1,30 @@
-import { client, runDB } from "../../src/db/mongo.db";
-import { MONGO_URL_DEV } from "../../src/settings/config";
-import { clearDB } from "./clear-bb";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { Db, MongoClient } from "mongodb";
+import { initCollections } from "../../src/db/collections";
+import os from "node:os";
 
 export function setupDbLifecycle() {
+  let mongod: MongoMemoryServer, client: MongoClient, db: Db;
   beforeAll(async () => {
-    await runDB(MONGO_URL_DEV);
-  }, 20000);
+    mongod = await MongoMemoryServer.create();
+    client = await MongoClient.connect(mongod.getUri(), {
+      runtimeAdapters: { os },
+    });
+    db = client.db("test");
+    initCollections(db);
+  }, 120_000);
 
   beforeEach(async () => {
-    await clearDB();
+    const collections = await db.collections();
+    await Promise.all(collections.map((c) => c.deleteMany({})));
   });
 
   afterAll(async () => {
     if (client) {
       await client.close();
+    }
+    if (mongod) {
+      await mongod.stop();
     }
   });
 }
