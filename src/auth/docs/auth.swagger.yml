@@ -56,9 +56,81 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserDataViewOutput"
+                $ref: "#/components/schemas/UserView"
         401:
           description: Missing, malformed, or invalid/expired JWT
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/auth/registration:
+    post:
+      summary: Register a new user and send an email confirmation code
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateInput"
+      responses:
+        201:
+          description: User registered successfully, confirmation email sent
+        400:
+          description: Validation error, or user with this login/email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/auth/registration-confirmation:
+    post:
+      summary: Confirm registration by email confirmation code
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationConfirmationInput"
+      responses:
+        204:
+          description: Email successfully confirmed
+        400:
+          description: Validation error, or confirmation code is expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+        404:
+          description: User with the given confirmation code was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/auth/registration-email-resending:
+    post:
+      summary: Resend the email confirmation code
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationEmailResendingInput"
+      responses:
+        204:
+          description: Confirmation email resent successfully
+        400:
+          description: Validation error, or the previous confirmation code has not expired yet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+        404:
+          description: User with the given email was not found
           content:
             application/json:
               schema:
@@ -99,3 +171,76 @@ components:
           type: string
           description: JWT access token
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U
+
+    RegistrationConfirmationInput:
+      type: object
+      required:
+        - emailConfirmationCode
+      properties:
+        emailConfirmationCode:
+          type: string
+          format: uuid
+          description: Email confirmation code sent to the user's email
+          example: 3a2f1b4c-5d6e-7f8g-9h0i-1j2k3l4m5n6o
+
+    RegistrationEmailResendingInput:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 5
+          maxLength: 100
+          description: Email to resend the confirmation code to
+          example: jane.doe@example.com
+
+    UserView:
+      type: object
+      required:
+        - type
+        - id
+        - attributes
+      properties:
+        type:
+          type: string
+          enum: [users]
+          example: users
+        id:
+          type: string
+          example: 5f1a2b3c4d5e6f7g8h9i0j1k2
+        attributes:
+          type: object
+          required:
+            - firstName
+            - lastName
+            - middleName
+            - phoneNumber
+            - email
+            - createdAt
+            - emailConfirmation
+          properties:
+            firstName:
+              type: string
+              example: Jane
+            lastName:
+              type: string
+              example: Doe
+            middleName:
+              type: string
+              nullable: true
+              example: null
+            phoneNumber:
+              type: string
+              example: "+1234567890"
+            email:
+              type: string
+              format: email
+              example: jane.doe@example.com
+            createdAt:
+              type: string
+              format: date-time
+              example: 2023-03-05T12:00:00Z
+            emailConfirmation:
+              $ref: "#/components/schemas/EmailConfirmationOutput"
