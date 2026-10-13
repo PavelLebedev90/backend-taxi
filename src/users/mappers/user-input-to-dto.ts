@@ -1,9 +1,9 @@
 import { UserInputDto } from "../dto/user.input.dto";
-import { User } from "../types/user.types";
+import { UserDto } from "../types/user.types";
 
 export function mapUserInputToDTO(
   dto: Omit<UserInputDto, "login" | "password">,
-): Omit<User, "createdAt" | "passwordHash" | "login"> {
+): UserDto {
   return {
     firstName: dto.firstName,
     lastName: dto.lastName,

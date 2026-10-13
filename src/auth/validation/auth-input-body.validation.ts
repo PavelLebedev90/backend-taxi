@@ -15,3 +15,27 @@ export const validationSchemaAuthLoginInputBody = checkSchema(
   },
   ["body"],
 );
+
+export const validationSchemaRegistrationConfirmationAuthInputBody =
+  checkSchema(
+    {
+      emailConfirmationCode: {
+        isUUID: true,
+      },
+    },
+    ["body"],
+  );
+
+export const validationSchemaRegistrationEmailResendingAuthInputBody =
+  checkSchema(
+    {
+      email: {
+        isString: true,
+        trim: true,
+        isEmail: true,
+        toLowerCase: true,
+        isLength: { options: { min: 5, max: 100 } },
+      },
+    },
+    ["body"],
+  );

@@ -36,6 +36,10 @@ describe("User API", () => {
           phoneNumber: newUser.data.attributes.phoneNumber,
           email: newUser.data.attributes.email,
           createdAt: expect.any(String),
+          emailConfirmation: expect.objectContaining({
+            isConfirmed: expect.any(Boolean),
+            confirmationCode: null,
+          }),
         },
       },
     });
