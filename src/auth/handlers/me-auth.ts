@@ -14,9 +14,6 @@ export const getMeAuth = async (
     }
   >,
 ) => {
-  // const user = await usersQueryRepository.findByIdOrFail(
-  //   res.locals?.user._id.toString(),
-  // );
   if (!res.locals.user) {
     throw new Error(`not found Auth credentials`, {
       cause: {

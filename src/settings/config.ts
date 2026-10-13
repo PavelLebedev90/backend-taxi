@@ -14,3 +14,6 @@ export const MONGO_URL_DEV = "mongodb://0.0.0.0:27018/taxi-dev-db";
 export const DB_NAME = process.env.DB_NAME || "Taxi";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "JWT_SECRET";
+
+export const SMTP_USER = process.env.SMTP_USER || "empty";
+export const SMTP_PASS = process.env.SMTP_PASS || "empty";

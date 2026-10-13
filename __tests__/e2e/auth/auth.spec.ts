@@ -129,6 +129,30 @@ describe("Auth API", () => {
       );
     });
 
+    it("should return the user as a plain resource object, not wrapped in a data envelope", async () => {
+      const { createdUser, token } = await createAndLoginUser();
+
+      const meResponse = await getMeAuth(token).expect(HttpStatus.Ok);
+
+      expect(meResponse.body).not.toHaveProperty("data");
+      expect(meResponse.body).toEqual({
+        type: createdUser.type,
+        id: createdUser.id,
+        attributes: {
+          firstName: createdUser.attributes.firstName,
+          lastName: createdUser.attributes.lastName,
+          middleName: createdUser.attributes.middleName,
+          phoneNumber: createdUser.attributes.phoneNumber,
+          email: createdUser.attributes.email,
+          createdAt: createdUser.attributes.createdAt,
+          emailConfirmation: expect.objectContaining({
+            isConfirmed: expect.any(Boolean),
+            confirmationCode: null,
+          }),
+        },
+      });
+    });
+
     it("should not return user info without an authorization header", async () => {
       await getMeAuth().expect(HttpStatus.Unauthorized);
     });

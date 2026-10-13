@@ -14,6 +14,10 @@ export const mapAuthView = (user: WithId<User>): UserView => {
       phoneNumber: user.phoneNumber,
       email: user.email,
       createdAt: user.createdAt,
+      emailConfirmation: {
+        isConfirmed: user.emailConfirmationIsConfirmed,
+        confirmationCode: user.emailConfirmationCode,
+      },
     },
   };
 };

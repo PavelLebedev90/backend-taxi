@@ -11,6 +11,10 @@ export type UserView = {
     phoneNumber: string;
     email: string;
     createdAt: Date;
+    emailConfirmation: {
+      isConfirmed: boolean;
+      confirmationCode: string | null;
+    };
   };
 };
 

@@ -211,7 +211,7 @@ describe("User API body validation check", () => {
     }).expect(HttpStatus.BadRequest);
 
     expect(duplicateResponse.body.errorMessages[0]).toEqual({
-      field: "email",
+      field: "loginOrEmail",
       message: expect.any(String),
     });
   });

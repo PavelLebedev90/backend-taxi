@@ -346,39 +346,24 @@ components:
     ValidationErrorOutput:
       type: object
       required:
-        - status
-        - detail
-        - source
+        - field
+        - message
       properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code of the error
-          example: 400
-        detail:
+        field:
           type: string
-          description: Detailed error message
+          description: Name of the field that caused the error, or an empty string if not field-specific
+          example: "clientName"
+        message:
+          type: string
+          description: Human-readable error message
           example: "Client name is required"
-        source:
-          type: object
-          properties:
-            pointer:
-              type: string
-              description: JSON pointer to the field that caused the error
-              example: "clientName"
-        code:
-          type: string
-          nullable: true
-          description: Optional error code
-          example: null
-          default: null
 
     ValidationErrorListOutput:
       type: object
       required:
-        - errors
+        - errorMessages
       properties:
-        errors:
+        errorMessages:
           type: array
           items:
             $ref: "#/components/schemas/ValidationErrorOutput"

@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserOutput"
+                $ref: "#/components/schemas/UserDataViewOutput"
         400:
           description: Validation error
           content:
@@ -175,44 +175,6 @@ components:
       type: http
       scheme: basic
   schemas:
-    UserOutput:
-      type: object
-      required:
-        - data
-      properties:
-        data:
-          type: object
-          required:
-            - type
-            - id
-            - attributes
-          properties:
-            type:
-              type: string
-              enum: [users]
-              example: users
-            id:
-              type: string
-              example: 5f1a2b3c4d5e6f7g8h9i0j1k2
-            attributes:
-              type: object
-              required:
-                - name
-                - email
-                - createdAt
-              properties:
-                name:
-                  type: string
-                  example: Jane Doe
-                email:
-                  type: string
-                  format: email
-                  example: jane.doe@example.com
-                createdAt:
-                  type: string
-                  format: date-time
-                  example: 2023-03-05T12:00:00Z
-
     UserDataViewOutput:
       type: object
       required:
@@ -241,6 +203,7 @@ components:
                 - phoneNumber
                 - email
                 - createdAt
+                - emailConfirmation
               properties:
                 firstName:
                   type: string
@@ -263,6 +226,8 @@ components:
                   type: string
                   format: date-time
                   example: 2023-03-05T12:00:00Z
+                emailConfirmation:
+                  $ref: "#/components/schemas/EmailConfirmationOutput"
 
     UserListPaginatedOutput:
       type: object
@@ -295,6 +260,7 @@ components:
                   - phoneNumber
                   - email
                   - createdAt
+                  - emailConfirmation
                 properties:
                   firstName:
                     type: string
@@ -317,6 +283,8 @@ components:
                     type: string
                     format: date-time
                     example: 2023-03-05T12:00:00Z
+                  emailConfirmation:
+                    $ref: "#/components/schemas/EmailConfirmationOutput"
         meta:
           $ref: "#/components/schemas/PaginatedOutput"
     UserCreateInput:
@@ -423,6 +391,21 @@ components:
         phoneNumber:
           type: string
           example: "+1234567890"
+    EmailConfirmationOutput:
+      type: object
+      required:
+        - isConfirmed
+        - confirmationCode
+      properties:
+        isConfirmed:
+          type: boolean
+          description: Whether the user's email has been confirmed
+          example: true
+        confirmationCode:
+          type: string
+          nullable: true
+          description: Pending email confirmation code, if any
+          example: null
     PaginatedOutput:
       type: object
       required:
@@ -450,40 +433,25 @@ components:
     ValidationErrorOutput:
       type: object
       required:
-        - status
-        - detail
-        - source
+        - field
+        - message
       properties:
-        status:
-          type: integer
-          format: int32
-          description: HTTP status code of the error
-          example: 400
-        detail:
+        field:
           type: string
-          description: Detailed error message
+          description: Name of the field that caused the error, or an empty string if not field-specific
+          example: "firstName"
+        message:
+          type: string
+          description: Human-readable error message
           example: "Name must be at least 2 characters long"
-        source:
-          type: object
-          properties:
-            pointer:
-              type: string
-              description: JSON pointer to the field that caused the error
-              example: "name"
-        code:
-          type: string
-          nullable: true
-          description: Optional error code
-          example: null
-          default: null
 
     ValidationErrorListOutput:
       type: object
       required:
-        - errors
+        - errorMessages
       properties:
-        errors:
+        errorMessages:
           type: array
           items:
             $ref: "#/components/schemas/ValidationErrorOutput"
-          description: List of validation errors
+          description: List of validation/business errors
