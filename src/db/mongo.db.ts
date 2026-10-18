@@ -1,6 +1,9 @@
 import { Db, MongoClient } from "mongodb";
 import os from "node:os";
-import { initCollections } from "./collections";
+import {
+  initCollections,
+  refreshTokenBlackListCollection,
+} from "./collections";
 import { DB_NAME } from "../settings/config";
 
 export let client: MongoClient;
@@ -12,6 +15,11 @@ export async function runDB(url: string): Promise<void> {
 
   // Инициализируем коллекции из подключённой базы.
   initCollections(db);
+  // Индекс для удаления записи по истечению expiresAt
+  await refreshTokenBlackListCollection.createIndex(
+    { expiresAt: 1 },
+    { expireAfterSeconds: 0 },
+  );
 
   try {
     await client.connect();
