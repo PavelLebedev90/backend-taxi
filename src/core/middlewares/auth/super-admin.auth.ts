@@ -16,7 +16,7 @@ export const superAdminAuth = (
     res.sendStatus(HttpStatus.Unauthorized);
     return;
   }
-
+  //--
   const [authType, token] = authHeader.split(" ");
 
   if (authType !== BASE_AUTH_PREFIX) {
