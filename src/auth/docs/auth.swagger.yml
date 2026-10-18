@@ -11,6 +11,10 @@ paths:
   /api/auth/login:
     post:
       summary: Log in and receive a JWT access token
+      description: >
+        On success, a `refreshToken` is also set as an httpOnly cookie
+        (scoped to the `/api/auth` path) for use with the refresh and
+        logout endpoints.
       tags: [Auth]
       requestBody:
         required: true
@@ -21,6 +25,11 @@ paths:
       responses:
         200:
           description: Successful login
+          headers:
+            Set-Cookie:
+              description: httpOnly refreshToken cookie, path=/api/auth
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -39,6 +48,55 @@ paths:
                 $ref: "#/components/schemas/ValidationErrorListOutput"
         404:
           description: User with the given login or email was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/auth/refresh-token:
+    post:
+      summary: Issue a new access/refresh token pair using the refresh token cookie
+      description: >
+        Reads the refresh token from the httpOnly `refreshToken` cookie,
+        verifies it, and rotates it: the used token is blacklisted and a
+        new access/refresh token pair is issued. The new refresh token is
+        set as an httpOnly cookie (scoped to the `/api/auth` path).
+      tags: [Auth]
+      responses:
+        200:
+          description: New access token issued, refresh token cookie rotated
+          headers:
+            Set-Cookie:
+              description: httpOnly refreshToken cookie, path=/api/auth
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginOutput"
+        401:
+          description: Missing, malformed, expired, or blacklisted refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorListOutput"
+
+  /api/auth/logout:
+    post:
+      summary: Log out and invalidate the current refresh token
+      description: >
+        Blacklists the refresh token from the httpOnly `refreshToken`
+        cookie and clears the cookie. Requires a valid access token.
+      tags: [Auth]
+      security:
+        - BearerAuth: []
+      responses:
+        204:
+          description: Successfully logged out, refresh token cookie cleared
+        401:
+          description: >
+            Missing/invalid access token, or missing, malformed, expired,
+            or blacklisted refresh token
           content:
             application/json:
               schema:

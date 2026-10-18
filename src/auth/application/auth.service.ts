@@ -9,9 +9,15 @@ import { mapUserInputToDTO } from "../../users/mappers/user-input-to-dto";
 import { nodemailerService } from "../../core/application/nodemailer.service";
 import { ObjectId } from "mongodb";
 import { mapAuthEmailConfirmationToDb } from "../mappers/auth-email-confirmation-db";
+import { refreshTokensService } from "../../refreshTokens/application/refreshTokens.service";
 
 export const authService = {
-  async loginAuth(loginInfo: AuthLoginInput): Promise<{ token: string }> {
+  async loginAuth(
+    loginInfo: Omit<AuthLoginInput, "password"> & { password?: string },
+  ): Promise<{
+    accessToken: { token: string; exp: number };
+    refreshToken: { token: string; exp: number };
+  }> {
     const user = await usersService.findUserByLoginOrEmail(
       loginInfo.loginOrEmail,
     );
@@ -26,23 +32,64 @@ export const authService = {
         },
       );
     }
-    const isPasswordValid = await bcrypt.compare(
-      loginInfo.password,
-      user.passwordHash,
-    );
-    if (!isPasswordValid) {
-      throw new Error(
-        `Invalid credentials for loginOrEmail=${loginInfo.loginOrEmail}`,
-        {
-          cause: {
-            status: HttpStatus.Unauthorized,
-            field: "loginOrEmail",
-          },
-        },
+    if (loginInfo.password) {
+      const isPasswordValid = await bcrypt.compare(
+        loginInfo.password,
+        user.passwordHash,
       );
+      if (!isPasswordValid) {
+        throw new Error(
+          `Invalid credentials for loginOrEmail=${loginInfo.loginOrEmail}`,
+          {
+            cause: {
+              status: HttpStatus.Unauthorized,
+              field: "loginOrEmail",
+            },
+          },
+        );
+      }
     }
-    const token = JWTService.createToken(user);
-    return token;
+    const accessToken = JWTService.createToken(user, "at+jwt");
+    const refreshToken = JWTService.createToken(user, "rt+jwt");
+    return { accessToken, refreshToken };
+  },
+  async logout(token: string) {
+    const { payload } = JWTService.verifyToken(token, "rt+jwt");
+    const blackToken = await refreshTokensService.getRefreshTokenByToken(token);
+    if (blackToken) {
+      throw new Error(`Token is not valid`, {
+        cause: {
+          status: HttpStatus.Unauthorized,
+          field: "jwt",
+        },
+      });
+    }
+    await refreshTokensService.create({
+      token,
+      expiresAt: new Date(payload.exp! * 1000),
+    });
+  },
+  async refresh(token: string) {
+    const { payload } = JWTService.verifyToken(token, "rt+jwt");
+    const blackToken = await refreshTokensService.getRefreshTokenByToken(token);
+    if (blackToken) {
+      throw new Error(`Token is not valid`, {
+        cause: {
+          status: HttpStatus.Unauthorized,
+          field: "jwt",
+        },
+      });
+    }
+    const result = await this.loginAuth({
+      loginOrEmail: payload.email,
+    });
+    if (result) {
+      await refreshTokensService.create({
+        token,
+        expiresAt: new Date(payload.exp! * 1000),
+      });
+    }
+    return result;
   },
   async registrationAuth(userInfo: UserInputDto): Promise<ObjectId> {
     const existingUser = await usersService.findUserByLoginOrEmail({

@@ -13,9 +13,10 @@ import { usersRouter } from "./users/routers/users.router";
 import { USER_ROUTE } from "./core/constants/users-router.path";
 import { AUTH_ROUTE } from "./core/constants/auth-router.path";
 import { authRouter } from "./auth/routers/auth.router";
+import cookieParser from "cookie-parser";
 
 export const setupApp = (app: Express) => {
-  app.use(express.json());
+  app.use(express.json(), cookieParser());
 
   app.use(`${BASE_ROUTE}${DRIVER_ROUTE.DRIVERS}`, driversRouter);
   app.use(`${BASE_ROUTE}${RIDE_ROUTE.RIDES}`, ridesRouter);

@@ -4,6 +4,7 @@ import { MONGO_URL_DEV, PORT } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 
 const app: Express = express();
+app.set("trust proxy", 1);
 const bootstrap = async () => {
   setupApp(app);
 
